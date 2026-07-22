@@ -1,0 +1,89 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Klien - SIMIPKIT</title>
+    <link rel="stylesheet" href="<c:url value='/resources/css/style.css'/>">
+</head>
+<body>
+    <header>
+        <a href="<c:url value='/'/>" class="brand">SIMIPKIT</a>
+        <ul class="nav-links">
+            <li><a href="<c:url value='/'/>">Dashboard</a></li>
+            <li><a href="<c:url value='/clients'/>" class="active">Klien</a></li>
+            <li><a href="<c:url value='/documents/bulk-upload'/>">Bulk Upload KYC</a></li>
+            <li><a href="<c:url value='/reports'/>">Laporan</a></li>
+            <li><a href="<c:url value='/bank-sync-log'/>">Bank Sync Log</a></li>
+            <c:if test="${sessionScope.role == 'admin'}">
+                <li><a href="<c:url value='/user-management'/>">User Management</a></li>
+                <li><a href="<c:url value='/report-template-upload'/>">Template Laporan</a></li>
+            </c:if>
+            <li><a href="<c:url value='/audit-log'/>">Audit Log</a></li>
+        </ul>
+        <div class="user-info">
+            <span><c:out value="${sessionScope.user.username}"/></span>
+            <span class="role-badge"><c:out value="${sessionScope.role}"/></span>
+            <a href="<c:url value='/logout'/>" class="btn btn-sm btn-secondary">Logout</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>Manajemen Data Klien</h1>
+                <p>Kelola data nasabah, dokumen KYC, dan portofolio investasi</p>
+            </div>
+            <div>
+                <a href="<c:url value='/clients/new'/>" class="btn btn-primary">Tambah Klien Baru</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID Klien</th>
+                        <th>Nama Lengkap</th>
+                        <th>NIK</th>
+                        <th>Alamat</th>
+                        <th>Status KYC</th>
+                        <th>Tanggal Daftar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <c:forEach var="c" items="${clients}">
+                        <tr>
+                            <td class="mono"><c:out value="${c.id}"/></td>
+                            <td><strong><c:out value="${c.nama}"/></strong></td>
+                            <td class="mono"><c:out value="${c.nik}"/></td>
+                            <td><c:out value="${c.alamat}"/></td>
+                            <td>
+                                <span style="font-weight: 600; color: ${c.statusKyc == 'VERIFIED' ? '#166534' : (c.statusKyc == 'REJECTED' ? '#991b1b' : '#b45309')};">
+                                    <c:out value="${c.statusKyc}"/>
+                                </span>
+                            </td>
+                            <td><c:out value="${c.createdAt}"/></td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="<c:url value='/clients/detail/${c.id}'/>" class="btn btn-sm">Detail</a>
+                                    <a href="<c:url value='/portfolio/list/${c.id}'/>" class="btn btn-sm btn-secondary">Portofolio</a>
+                                    <a href="<c:url value='/clients/edit/${c.id}'/>" class="btn btn-sm">Edit</a>
+                                    <a href="<c:url value='/clients/delete/${c.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data klien ini?');">Hapus</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                    <c:if test="${empty clients}">
+                        <tr>
+                            <td colspan="7" class="text-center">Belum ada data klien terdaftar.</td>
+                        </tr>
+                    </c:if>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

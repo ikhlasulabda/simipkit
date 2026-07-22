@@ -1,0 +1,76 @@
+CREATE TABLE IF NOT EXISTS users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    role VARCHAR(20) NOT NULL DEFAULT 'staff',
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS clients (
+    id VARCHAR(50) PRIMARY KEY,
+    nama VARCHAR(150) NOT NULL,
+    nik VARCHAR(20) NOT NULL UNIQUE,
+    alamat VARCHAR(255),
+    status_kyc VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS client_documents (
+    id VARCHAR(50) PRIMARY KEY,
+    client_id VARCHAR(50) NOT NULL,
+    jenis_dokumen VARCHAR(50) NOT NULL,
+    nama_file_asli VARCHAR(255) NOT NULL,
+    nama_file_stored VARCHAR(255) NOT NULL,
+    file_size_bytes BIGINT NOT NULL,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS portfolio_assets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id VARCHAR(50) NOT NULL,
+    jenis_instrumen VARCHAR(50) NOT NULL,
+    nama_instrumen VARCHAR(100) NOT NULL,
+    jumlah DOUBLE NOT NULL,
+    nilai DOUBLE NOT NULL,
+    allocation_percent DOUBLE NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS report_templates (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nama_template VARCHAR(100) NOT NULL,
+    xml_content LONGTEXT NOT NULL,
+    uploaded_by INT,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id)
+);
+
+CREATE TABLE IF NOT EXISTS portfolio_report_summary (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    client_id VARCHAR(50) NOT NULL,
+    periode VARCHAR(50) NOT NULL,
+    total_nilai DOUBLE NOT NULL,
+    generated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS bank_sync_events (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_type VARCHAR(50) NOT NULL,
+    payload_raw LONGTEXT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'RECEIVED',
+    processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    action VARCHAR(100) NOT NULL,
+    ip_address VARCHAR(45),
+    detail VARCHAR(500),
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+);
