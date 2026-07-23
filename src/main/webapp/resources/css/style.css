@@ -527,3 +527,133 @@ textarea.form-control {
     justify-content: flex-end;
     gap: 12px;
 }
+
+/* ===== DASHBOARD: COMPACT STAT CARDS ===== */
+.stat-card.stat-card-compact {
+    padding: 16px 18px;
+}
+
+.stat-card.stat-card-compact .label {
+    font-size: 10px;
+    margin-bottom: 4px;
+}
+
+.stat-card.stat-card-compact .value {
+    font-size: 22px;
+}
+
+/* ===== DASHBOARD: ANALYTICS LAYOUT ===== */
+.dashboard-analytics {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.analytics-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.auditlog-column {
+    min-width: 0;
+}
+
+.card-sticky-log {
+    position: sticky;
+    top: 20px;
+}
+
+/* ===== DASHBOARD: CHART CARDS ===== */
+.chart-card {
+    background-color: var(--bg-card);
+    border: none;
+    border-radius: 0;
+    padding: 20px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.chart-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
+}
+
+.chart-header {
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--accent-muted-light);
+}
+
+.chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.chart-summary {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.02em;
+}
+
+.chart-summary-sm {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+/* Canvas containers with fixed heights for consistent layout */
+.chart-canvas-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.chart-canvas-hero {
+    height: 260px;
+}
+
+.chart-canvas-sm {
+    height: 220px;
+}
+
+/* ===== DASHBOARD: CHART 2x2 GRID ===== */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+/* ===== RESPONSIVE: DASHBOARD ANALYTICS ===== */
+@media (max-width: 1100px) {
+    .dashboard-analytics {
+        grid-template-columns: 1fr;
+    }
+
+    .card-sticky-log {
+        position: static;
+    }
+}
+
+@media (max-width: 768px) {
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
