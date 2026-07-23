@@ -12,29 +12,43 @@
         <h2>SIMIPKIT</h2>
         <p>Sistem Informasi Manajemen Investasi dan Portofolio Klien</p>
 
-        <c:if test="${not empty error}">
-            <div class="alert alert-danger">
+        <c:if test="${rateLimited}">
+            <div class="alert alert-danger mb-20" style="margin-top: 15px;">
                 <c:out value="${error}"/>
             </div>
         </c:if>
 
-        <form action="<c:url value='/login'/>" method="post">
-            <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
-            
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" class="form-control" maxlength="50" required autofocus autocomplete="username">
-            </div>
+        <c:if test="${not rateLimited}">
+            <c:if test="${not empty timeoutMessage}">
+                <div class="alert alert-info" style="font-size: 13px; margin-bottom: 16px;">
+                    <c:out value="${timeoutMessage}"/>
+                </div>
+            </c:if>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" class="form-control" maxlength="100" required autocomplete="current-password">
-            </div>
+            <c:if test="${not empty error}">
+                <div class="alert alert-danger">
+                    <c:out value="${error}"/>
+                </div>
+            </c:if>
 
-            <div class="form-group mt-20">
-                <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk</button>
-            </div>
-        </form>
+            <form action="<c:url value='/login'/>" method="post">
+                <input type="hidden" name="csrfToken" value="<c:out value='${csrfToken}'/>">
+                
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" class="form-control" maxlength="50" required autofocus autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" class="form-control" maxlength="100" required autocomplete="current-password">
+                </div>
+
+                <div class="form-group mt-20">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Masuk</button>
+                </div>
+            </form>
+        </c:if>
     </div>
 </body>
 </html>

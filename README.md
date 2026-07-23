@@ -1,20 +1,33 @@
 # SIMIPKIT
 
-Sistem Informasi Manajemen Investasi & Portofolio Klien Terintegrasi
+Integrated Client Investment & Portfolio Management System
 
-Aplikasi web untuk mengelola data klien, dokumen KYC, portofolio investasi, laporan, dan sinkronisasi data dari sistem bank partner.
+> **Notice:** This application is designed specifically for controlled Vulnerability Assessment & Penetration Testing labs. It intentionally incorporates legacy dependency versions and security flaws for training purposes.
 
-> **Catatan:** Project ini dibuat untuk keperluan lab Vulnerability Assessment & Penetration Testing yang terkontrol. Beberapa dependency sengaja menggunakan versi lama yang vulnerable untuk keperluan pembelajaran keamanan aplikasi. Lihat `important.md` untuk detail.
+---
 
-## Tech Stack
+## Technical Stack
 
-- Java 11
-- Spring Framework 5.3.16 (MVC, JDBC)
-- Apache Tomcat 9
-- MariaDB / MySQL
-- Maven
+- **Java 11**, **Spring Framework 5.3.16** (MVC, JDBC)
+- **Apache Tomcat 9**, **MariaDB / MySQL**
+- **Maven**, **Docker / Docker Compose**
 
-## Struktur Project
+---
+
+## Project Scope & Modules
+
+SIMIPKIT provides a full-featured financial portfolio management platform comprising:
+
+- **Client & KYC Management**: CRUD client identity data, single and bulk ZIP document uploads.
+- **Portfolio Management**: Asset tracking, allocation calculations, and valuation monitoring.
+- **Report Generator**: Immutable report summary snapshots, custom XML template parser, and PDF report export.
+- **Bank Sync Engine**: Ingestion and processing of transactional data feeds from partner banks.
+- **User & Access Control**: Role-based access control (Admin / Staff), PBKDF2 password hashing, IP rate limiting, and 7-minute inactivity auto-logout.
+- **Audit & Security Logging**: Centralized activity log tracking across user actions and system events.
+
+---
+
+## Folder Structure
 
 ```
 simipkit/
@@ -74,6 +87,7 @@ simipkit/
 │   │   └── AuditLogService.java
 │   │
 │   └── util/
+│       ├── CurrencyUtil.java
 │       └── FileNamingUtil.java
 │
 ├── src/main/resources/
@@ -102,56 +116,81 @@ simipkit/
     │       └── audit-log.jsp
     │
     └── resources/
-        └── css/
-            └── style.css
+        ├── css/
+        │   └── style.css
+        └── js/
+            ├── table-search.js
+            ├── confirm-modal.js
+            └── idle-timer.js
 ```
 
-## Modul
+---
 
-| Modul | Fungsi |
-|---|---|
-| Client & KYC Management | CRUD data klien, upload dokumen identitas (single & bulk ZIP) |
-| Portfolio Management | Input dan tracking aset investasi klien |
-| Report Generator | Export laporan portofolio, import custom template XML |
-| Bank/Partner Data Sync | Terima feed data transaksi dari sistem bank partner |
-| Admin & Access Control | Login, manajemen role (staff/admin) |
-| Audit & Activity Log | Pencatatan aktivitas pengguna |
+## Required Deployment Files
 
-## Cara Menjalankan
+Before deployment, ensure the following configuration files are present in the project root:
 
-### Mode 1 - Manual Deploy (Tomcat langsung)
+1. `pom.xml` (Maven build configuration)
+2. `Dockerfile` (Container image configuration for Tomcat 9 & JDK 11)
+3. `docker-compose.yml` (Services definition for app and database)
+4. `.env` (Copied from `.env.example` to define database credentials)
+5. `src/main/resources/schema.sql` (Database initialization script)
 
-Prasyarat: JDK 11, Maven, Tomcat 9, MariaDB/MySQL sudah terpasang.
+---
 
-```bash
-mvn clean package
-# copy target/simipkit.war ke folder webapps/ Tomcat
-```
+## Step-by-Step Setup Guide
 
-Environment variable (opsional, ada fallback default ke `localhost`):
+### Method 1: Docker Compose Deployment (Recommended)
 
-```
-DB_HOST=localhost
-DB_PORT=3306
-DB_NAME=simipkit
-DB_USER=simipkit_app
-DB_PASSWORD=
-```
+1. **Clone & Prepare Environment File:**
+   ```bash
+   cp .env.example .env
+   ```
+2. **Build and Launch Containers:**
+   ```bash
+   docker compose up -d --build
+   ```
+3. **Access Application:**
+   Open `http://localhost:8080` in your web browser.
 
-### Mode 2 - Docker Compose
+---
 
-```bash
-cp .env.example .env
-# isi .env sesuai kebutuhan
-docker compose up -d --build
-```
+### Method 2: Manual Setup on Ubuntu
 
-Aplikasi dapat diakses di `http://localhost:8080`.
+1. **Install Prerequisites:**
+   ```bash
+   sudo apt update
+   sudo apt install -y openjdk-11-jdk maven tomcat9 mariadb-server
+   ```
+2. **Configure Database:**
+   ```sql
+   CREATE DATABASE simipkit;
+   CREATE USER 'simipkit_app'@'localhost' IDENTIFIED BY 'your_password';
+   GRANT ALL PRIVILEGES ON simipkit.* TO 'simipkit_app'@'localhost';
+   FLUSH PRIVILEGES;
+   ```
+3. **Build Application WAR:**
+   ```bash
+   mvn clean package
+   ```
+4. **Deploy to Tomcat:**
+   ```bash
+   sudo cp target/simipkit.war /var/lib/tomcat9/webapps/ROOT.war
+   sudo systemctl restart tomcat9
+   ```
+5. **Set Environment Variables (Optional):**
+   Export `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD` if using custom database settings.
 
-## Environment Variables
+---
 
-Lihat `.env.example` untuk daftar lengkap variabel yang dibutuhkan.
+## Default Credentials & Initial Access
 
-## Lisensi
+- **Admin Account**: `admin` / `admin123`
+- **Staff Account**: `staff` / `staff123`
+- **Application URL**: `http://localhost:8080`
 
-Internal / lab use only.
+---
+
+## License & Usage
+
+Internal authorized laboratory and penetration testing use only.

@@ -82,4 +82,5 @@
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>
