@@ -93,6 +93,9 @@
                             <th>ID</th>
                             <th>Nama Template</th>
                             <th>Tanggal Upload</th>
+                            <c:if test="${sessionScope.role == 'admin'}">
+                                <th>Aksi</th>
+                            </c:if>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,11 +104,19 @@
                                 <td><c:out value="${t.id}"/></td>
                                 <td><strong><c:out value="${t.nama_template}"/></strong></td>
                                 <td><c:out value="${t.uploaded_at}"/></td>
+                                <c:if test="${sessionScope.role == 'admin'}">
+                                    <td>
+                                        <a href="<c:url value='/report-template-upload/delete/${t.id}'/>"
+                                           class="btn btn-sm btn-danger btn-confirm-action"
+                                           data-title="Hapus Template Laporan"
+                                           data-message="Hapus template '${t.nama_template}'? Template yang sudah dihapus tidak bisa dipulihkan dan tidak akan muncul lagi di pilihan saat generate PDF.">Hapus</a>
+                                    </td>
+                                </c:if>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty templates}">
                             <tr>
-                                <td colspan="3" class="text-center">Belum ada template XML tersimpan.</td>
+                                <td colspan="${sessionScope.role == 'admin' ? 4 : 3}" class="text-center">Belum ada template XML tersimpan.</td>
                             </tr>
                         </c:if>
                     </tbody>
@@ -115,6 +126,7 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/template-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>

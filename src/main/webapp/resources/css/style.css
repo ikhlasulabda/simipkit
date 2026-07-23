@@ -610,14 +610,14 @@ textarea.form-control {
 }
 
 .chart-canvas-hero {
-    height: 300px;
+    height: 170px;
 }
 
 .chart-canvas-sm {
     height: 220px;
 }
 
-/* ===== RESPONSIVE: DASHBOARD ===== */
+/* ===== RESPONSIVE: TABLETS & MOBILE ===== */
 @media (max-width: 768px) {
     .grid-4 {
         grid-template-columns: repeat(2, 1fr);
@@ -625,6 +625,104 @@ textarea.form-control {
 
     .chart-row {
         grid-template-columns: 1fr;
+    }
+}
+
+/* ===== RESPONSIVE: 640px & BELOW ===== */
+@media (max-width: 640px) {
+    header {
+        height: auto;
+        padding: 10px 14px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .nav-links {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links a {
+        padding: 8px 12px;
+        font-size: 12px;
+    }
+
+    .user-info {
+        font-size: 12px;
+        gap: 8px;
+    }
+
+    .container {
+        padding: 0 12px;
+        margin: 16px auto;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        padding-bottom: 14px;
+    }
+
+    .page-header h1 {
+        font-size: 20px;
+    }
+
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .stat-card.stat-card-compact {
+        padding: 12px 14px;
+    }
+
+    .stat-card.stat-card-compact .value {
+        font-size: 18px;
+    }
+
+    .chart-card {
+        padding: 14px;
+    }
+
+    .chart-summary {
+        font-size: 16px;
+    }
+
+    .chart-canvas-hero {
+        height: 160px;
+    }
+
+    .chart-canvas-sm {
+        height: 180px;
+    }
+
+    .table-search-input {
+        max-width: 100%;
+    }
+
+    th, td {
+        padding: 9px 11px;
+        font-size: 12px;
+    }
+
+    .modal-box {
+        width: 92% !important;
+        padding: 18px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+
+    .toast-notification {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        font-size: 12px;
+        padding: 10px 14px;
     }
 }
 

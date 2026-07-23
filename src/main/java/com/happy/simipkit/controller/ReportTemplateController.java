@@ -85,4 +85,18 @@ public class ReportTemplateController {
             return showUploadForm(model);
         }
     }
+
+    @PostMapping("/delete/{id}")
+    public String deleteTemplate(@PathVariable("id") int id,
+                                 HttpServletRequest request,
+                                 HttpSession session) {
+        String sql = "DELETE FROM report_templates WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        auditLogService.logAction(userId, "TEMPLATE_DELETE", request.getRemoteAddr(),
+                "Hapus template laporan ID: " + id);
+
+        return "redirect:/report-template-upload";
+    }
 }
