@@ -33,6 +33,19 @@ public class AuthenticationFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         String path = uri.substring(contextPath.length());
 
+        // CORS headers khusus untuk endpoint integrasi partner (bisa diakses dari device/domain lain)
+        if (path.startsWith("/api/sync/")) {
+            httpResponse.setHeader("Access-Control-Allow-Origin", "*");
+            httpResponse.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+            // Browser kirim OPTIONS dulu (preflight) sebelum POST asli, harus dijawab 200 langsung
+            if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
+                httpResponse.setStatus(HttpServletResponse.SC_OK);
+                return;
+            }
+        }
+
         // Exception paths
         if (path.equals("/login") || path.startsWith("/resources/") || path.startsWith("/api/sync/")) {
             chain.doFilter(request, response);
