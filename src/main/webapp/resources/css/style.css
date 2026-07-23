@@ -23,7 +23,8 @@
     --table-header-text:   #f5f0e8;
     --table-row-even:      #f5f0e4;
     --table-row-hover:     #ece7d8;
-    --shadow-card:         0 1px 4px rgba(28, 42, 30, 0.08), 0 0 0 1px rgba(212, 201, 168, 0.35);
+    --shadow-card:         0 1px 2px rgba(28, 42, 30, 0.04), 0 10px 28px -8px rgba(28, 42, 30, 0.16);
+    --shadow-card-hover:   0 2px 4px rgba(28, 42, 30, 0.05), 0 16px 36px -8px rgba(28, 42, 30, 0.20);
     --status-green:        #2d6a4f;
     --status-red:          #7c2020;
     --status-amber:        #8a6420;
@@ -33,7 +34,6 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    border-radius: 0 !important;
 }
 
 body {
@@ -101,11 +101,14 @@ header {
 }
 
 .role-badge {
-    display: inline-block;
-    padding: 2px 6px;
-    font-size: 11px;
-    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    font-size: 10.5px;
+    font-weight: 700;
+    border-radius: 3px;
     text-transform: uppercase;
+    letter-spacing: 0.04em;
     color: #f5f0e8;
     background-color: var(--secondary);
 }
@@ -127,41 +130,50 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    padding-bottom: 12px;
+    margin-bottom: 28px;
+    padding-bottom: 20px;
     border-bottom: 1px solid var(--accent-muted-light);
 }
 
 .page-header h1 {
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
+    letter-spacing: 0.03em;
     color: var(--text-primary);
+    margin-bottom: 6px;
 }
 
 .page-header p {
-    font-size: 13px;
+    font-size: 14px;
+    font-weight: 400;
     color: var(--text-muted);
-    margin-top: 4px;
 }
 
 /* Cards & Panels */
 .card {
     background-color: var(--bg-card);
-    border: 1px solid var(--border-main);
-    padding: 20px;
+    border: none;
+    border-radius: 0;
+    padding: 26px;
     margin-bottom: 20px;
     box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
 }
 
 .card-title {
-    font-size: 15px;
-    font-weight: 600;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     color: var(--text-primary);
-    margin-bottom: 14px;
-    padding-bottom: 8px;
-    padding-left: 10px;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
     border-bottom: 1px solid var(--accent-muted-light);
-    border-left: 3px solid var(--accent-muted);
 }
 
 /* Dashboard Grid & Metric Cards */
@@ -174,25 +186,32 @@ header {
 
 .stat-card {
     background-color: var(--bg-card);
-    border: 1px solid var(--border-main);
-    padding: 16px;
-    border-left: 3px solid var(--accent-muted);
+    border: none;
+    border-radius: 0;
+    padding: 24px;
     box-shadow: var(--shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.stat-card:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-1px);
 }
 
 .stat-card .label {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     color: var(--text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
 }
 
 .stat-card .value {
-    font-size: 24px;
+    font-size: 30px;
     font-weight: 700;
     color: var(--text-primary);
-    margin-top: 8px;
+    letter-spacing: -0.03em;
 }
 
 /* Tables */
@@ -200,12 +219,13 @@ table {
     width: 100%;
     border-collapse: collapse;
     background-color: var(--bg-card);
-    border: 1px solid var(--border-main);
     margin-bottom: 20px;
+    font-size: 13px;
+    text-align: left;
 }
 
 th, td {
-    padding: 10px 14px;
+    padding: 13px 16px;
     text-align: left;
     border-bottom: 1px solid var(--accent-muted-light);
     font-size: 13px;
@@ -213,10 +233,16 @@ th, td {
 
 th {
     background-color: var(--table-header-bg);
-    font-weight: 600;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    letter-spacing: 0.07em;
     color: var(--table-header-text);
-    border-bottom: 2px solid var(--primary-hover);
-    letter-spacing: 0.02em;
+    border-bottom: 1px solid var(--primary-hover);
+}
+
+tr:last-child td {
+    border-bottom: none;
 }
 
 tr:nth-child(even) {
@@ -231,7 +257,8 @@ tr:hover {
 .table-scroll-container {
     max-height: 340px;
     overflow-y: auto;
-    border: 1px solid var(--border-main);
+    border: 1px solid var(--accent-muted-light);
+    border-radius: 0;
 }
 
 .table-scroll-container table {
@@ -244,7 +271,6 @@ tr:hover {
     position: sticky;
     top: 0;
     z-index: 2;
-    /* Reinforce bg so stripes don't show through */
     background-color: var(--table-header-bg);
 }
 
@@ -256,23 +282,25 @@ tr:hover {
 .table-search-input {
     width: 100%;
     max-width: 340px;
-    padding: 7px 12px;
+    padding: 11px 14px;
+    border-radius: 3px;
     font-size: 13px;
     border: 1px solid var(--accent-muted-light);
     background-color: var(--bg-card);
     color: var(--text-primary);
     font-family: inherit;
+    transition: all 0.15s ease;
     outline: none;
 }
 
 .table-search-input:focus {
     border-color: var(--accent-muted);
-    box-shadow: 0 0 0 2px rgba(138, 120, 98, 0.14);
+    box-shadow: 0 0 0 3px rgba(28, 58, 42, 0.12);
 }
 
 /* Form Elements */
 .form-group {
-    margin-bottom: 16px;
+    margin-bottom: 22px;
 }
 
 .form-group label {
@@ -285,17 +313,20 @@ tr:hover {
 
 .form-control {
     width: 100%;
-    padding: 8px 12px;
-    font-size: 13px;
+    padding: 11px 14px;
+    border-radius: 3px;
+    font-size: 14px;
     border: 1px solid var(--accent-muted-light);
     background-color: var(--bg-card);
     color: var(--text-primary);
     font-family: inherit;
+    transition: all 0.15s ease;
+    outline: none;
 }
 
 .form-control:focus {
-    outline: none;
     border-color: var(--accent-muted);
+    box-shadow: 0 0 0 3px rgba(28, 58, 42, 0.12);
 }
 
 textarea.form-control {
@@ -305,16 +336,22 @@ textarea.form-control {
 
 /* Buttons */
 .btn {
-    display: inline-block;
-    padding: 8px 16px;
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 20px;
+    font-size: 12.5px;
     font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-radius: 3px;
     text-decoration: none;
     cursor: pointer;
     border: 1px solid transparent;
     text-align: center;
     background-color: var(--accent-muted-light);
     color: var(--text-primary);
+    transition: all 0.15s ease;
 }
 
 .btn-primary {
@@ -358,21 +395,26 @@ textarea.form-control {
 }
 
 .btn-sm {
-    padding: 4px 10px;
-    font-size: 12px;
+    padding: 6px 12px;
+    font-size: 11px;
 }
 
 .btn-group {
     display: flex;
-    gap: 6px;
+    gap: 12px;
 }
 
-/* Alerts */
+/* Alerts / Feedback Boxes */
 .alert {
-    padding: 12px 16px;
-    margin-bottom: 20px;
-    border: 1px solid transparent;
+    padding: 16px 18px;
+    border-radius: 3px;
+    margin-bottom: 24px;
     font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
 }
 
 .alert-danger {
@@ -408,7 +450,8 @@ textarea.form-control {
 .auth-box {
     width: 380px;
     background-color: var(--bg-card);
-    border: 1px solid var(--border-main);
+    border: none;
+    border-radius: 0;
     padding: 28px;
     box-shadow: var(--shadow-card);
 }

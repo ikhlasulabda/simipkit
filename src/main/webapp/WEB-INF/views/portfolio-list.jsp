@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="id_ID"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -43,7 +45,7 @@
 
         <div class="card mb-20" style="background-color: var(--table-row-even);">
             <div style="font-size: 13px; color: var(--text-muted);">Total Nilai Portofolio Investasi:</div>
-            <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);">Rp <c:out value="${totalValue}"/></div>
+            <div style="font-size: 24px; font-weight: 700; color: var(--text-primary);"><fmt:formatNumber value="${totalValue}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></div>
         </div>
 
         <div class="card">
@@ -74,7 +76,7 @@
                                 <td><c:out value="${a.jenisInstrumen}"/></td>
                                 <td><strong><c:out value="${a.namaInstrumen}"/></strong></td>
                                 <td><c:out value="${a.jumlah}"/></td>
-                                <td>Rp <c:out value="${a.nilai}"/></td>
+                                <td><fmt:formatNumber value="${a.nilai}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></td>
                                 <td><c:out value="${a.allocationPercent}"/>%</td>
                                 <td><c:out value="${a.updatedAt}"/></td>
                                 <td>

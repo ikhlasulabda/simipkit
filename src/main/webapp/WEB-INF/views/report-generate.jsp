@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="id_ID"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -67,7 +69,7 @@
             <div class="card-title">Preview Ringkasan Portofolio (${periode})</div>
 
             <div style="background-color: #f1f5f9; padding: 14px; margin-bottom: 16px;">
-                <strong>Total Nilai Portofolio:</strong> Rp <c:out value="${totalValue}"/>
+                <strong>Total Nilai Portofolio:</strong> <fmt:formatNumber value="${totalValue}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/>
             </div>
 
             <table>
@@ -86,7 +88,7 @@
                             <td><c:out value="${a.jenisInstrumen}"/></td>
                             <td><c:out value="${a.namaInstrumen}"/></td>
                             <td><c:out value="${a.jumlah}"/></td>
-                            <td>Rp <c:out value="${a.nilai}"/></td>
+                            <td><fmt:formatNumber value="${a.nilai}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></td>
                             <td><c:out value="${a.allocationPercent}"/>%</td>
                         </tr>
                     </c:forEach>

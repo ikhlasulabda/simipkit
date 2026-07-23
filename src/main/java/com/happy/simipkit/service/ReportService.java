@@ -3,6 +3,7 @@ package com.happy.simipkit.service;
 import com.happy.simipkit.model.Client;
 import com.happy.simipkit.model.PortfolioAsset;
 import com.happy.simipkit.model.PortfolioReportSummary;
+import com.happy.simipkit.util.CurrencyUtil;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -113,7 +114,7 @@ public class ReportService {
             addInfoRow(infoTable, "Nama Klien", client.getNama() != null ? client.getNama() : "-", fontLabel, fontNormal);
             addInfoRow(infoTable, "NIK", client.getNik() != null ? client.getNik() : "-", fontLabel, fontNormal);
             addInfoRow(infoTable, "Periode", summary.getPeriode() != null ? summary.getPeriode() : "-", fontLabel, fontNormal);
-            addInfoRow(infoTable, "Total Nilai", "Rp " + String.format("%,.2f", summary.getTotalNilai()), fontLabel, fontNormal);
+            addInfoRow(infoTable, "Total Nilai", CurrencyUtil.format(summary.getTotalNilai()), fontLabel, fontNormal);
             if (summary.getGeneratedAt() != null) {
                 String generatedAt = summary.getGeneratedAt().toString().replace("T", " ");
                 addInfoRow(infoTable, "Dibuat Pada", generatedAt, fontLabel, fontNormal);
@@ -155,8 +156,8 @@ public class ReportService {
                     BaseColor rowBg = even ? rowEven : BaseColor.WHITE;
                     addAssetCell(assetsTable, a.getJenisInstrumen(), fontTableCell, rowBg);
                     addAssetCell(assetsTable, a.getNamaInstrumen(), fontTableCell, rowBg);
-                    addAssetCell(assetsTable, String.valueOf(a.getJumlah()), fontTableCell, rowBg);
-                    addAssetCell(assetsTable, "Rp " + String.format("%,.2f", a.getNilai()), fontTableCell, rowBg);
+                    addAssetCell(assetsTable, String.valueOf((long) a.getJumlah()), fontTableCell, rowBg);
+                    addAssetCell(assetsTable, CurrencyUtil.format(a.getNilai()), fontTableCell, rowBg);
                     addAssetCell(assetsTable, String.format("%.2f", a.getAllocationPercent()) + "%", fontTableCell, rowBg);
                     even = !even;
                 }

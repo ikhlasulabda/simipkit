@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="id_ID"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -134,7 +136,7 @@
                                 <td><c:out value="${a.jenisInstrumen}"/></td>
                                 <td><c:out value="${a.namaInstrumen}"/></td>
                                 <td><c:out value="${a.jumlah}"/></td>
-                                <td>Rp <c:out value="${a.nilai}"/></td>
+                                <td><fmt:formatNumber value="${a.nilai}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></td>
                                 <td><c:out value="${a.allocationPercent}"/>%</td>
                             </tr>
                         </c:forEach>

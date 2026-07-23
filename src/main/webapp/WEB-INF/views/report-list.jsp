@@ -1,5 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setLocale value="id_ID"/>
 <!DOCTYPE html>
 <html>
 <head>
@@ -77,7 +79,7 @@
                                 <td><c:out value="${s.id}"/></td>
                                 <td class="mono"><c:out value="${s.clientId}"/></td>
                                 <td><strong><c:out value="${s.periode}"/></strong></td>
-                                <td>Rp <c:out value="${s.totalNilai}"/></td>
+                                <td><fmt:formatNumber value="${s.totalNilai}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></td>
                                 <td><c:out value="${s.generatedAt}"/></td>
                                 <td>
                                     <a href="<c:url value='/portfolio/report/${s.clientId}?periode=${s.periode}'/>" class="btn btn-sm">Lihat Detail</a>
