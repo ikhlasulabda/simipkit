@@ -42,6 +42,9 @@
 
         <c:if test="${not empty success}">
             <div class="alert alert-success"><c:out value="${success}"/></div>
+            <div class="mb-20">
+                <a href="<c:url value='/reports/summary/${summaryId}/pdf'/>" class="btn btn-pdf" id="btn-unduh-pdf">Unduh PDF</a>
+            </div>
         </c:if>
 
         <div class="card mb-20" style="max-width: 600px;">

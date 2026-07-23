@@ -48,7 +48,7 @@
             </div>
             <div class="stat-card">
                 <div class="label">Status Server</div>
-                <div class="value" style="font-size: 16px; color: #166534;">AKTIF</div>
+                <div class="value" style="font-size: 16px; color: var(--status-green);">AKTIF</div>
             </div>
             <div class="stat-card">
                 <div class="label">Log Aktivitas Terbaru</div>
@@ -58,37 +58,39 @@
 
         <div class="card">
             <div class="card-title">Audit Log Aktivitas Terakhir</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>User ID</th>
-                        <th>Aksi</th>
-                        <th>IP Address</th>
-                        <th>Detail</th>
-                        <th>Waktu</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="log" items="${recentAuditLogs}" varStatus="status">
-                        <c:if test="${status.index < 10}">
+            <div class="table-scroll-container">
+                <table id="tbl-dashboard-log">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Aksi</th>
+                            <th>IP Address</th>
+                            <th>Detail</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="log" items="${recentAuditLogs}" varStatus="status">
+                            <c:if test="${status.index < 10}">
+                                <tr>
+                                    <td><c:out value="${log.id}"/></td>
+                                    <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
+                                    <td><c:out value="${log.action}"/></td>
+                                    <td class="mono"><c:out value="${log.ipAddress}"/></td>
+                                    <td><c:out value="${log.detail}"/></td>
+                                    <td><c:out value="${log.timestamp}"/></td>
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${empty recentAuditLogs}">
                             <tr>
-                                <td><c:out value="${log.id}"/></td>
-                                <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
-                                <td><c:out value="${log.action}"/></td>
-                                <td class="mono"><c:out value="${log.ipAddress}"/></td>
-                                <td><c:out value="${log.detail}"/></td>
-                                <td><c:out value="${log.timestamp}"/></td>
+                                <td colspan="6" class="text-center">Belum ada aktivitas tercatat.</td>
                             </tr>
                         </c:if>
-                    </c:forEach>
-                    <c:if test="${empty recentAuditLogs}">
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada aktivitas tercatat.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>

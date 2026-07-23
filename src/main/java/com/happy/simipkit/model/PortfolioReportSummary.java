@@ -9,6 +9,7 @@ public class PortfolioReportSummary {
     private String periode;
     private double totalNilai;
     private LocalDateTime generatedAt;
+    private String assetsSnapshot;
 
     public PortfolioReportSummary() {
     }
@@ -60,5 +61,13 @@ public class PortfolioReportSummary {
 
     public void setGeneratedAt(LocalDateTime generatedAt) {
         this.generatedAt = generatedAt;
+    }
+
+    public String getAssetsSnapshot() {
+        return assetsSnapshot;
+    }
+
+    public void setAssetsSnapshot(String assetsSnapshot) {
+        this.assetsSnapshot = assetsSnapshot;
     }
 }

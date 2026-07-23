@@ -72,36 +72,44 @@
         <c:if test="${not empty previewResult}">
             <div class="card mb-20">
                 <div class="card-title">Hasil Parse Object XStream (Preview)</div>
-                <pre class="mono" style="background-color: #f1f5f9; padding: 12px; font-size: 12px; overflow-x: auto;"><c:out value="${previewResult}"/></pre>
+                <pre class="mono" style="background-color: var(--table-row-even); padding: 12px; font-size: 12px; overflow-x: auto;"><c:out value="${previewResult}"/></pre>
             </div>
         </c:if>
 
         <div class="card">
             <div class="card-title">Daftar Template Tersimpan</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Nama Template</th>
-                        <th>Tanggal Upload</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="t" items="${templates}">
+            <div class="table-search-bar">
+                <input type="text" id="search-templates" class="table-search-input"
+                       placeholder="Cari nama template..."
+                       oninput="tableSearch(this, 'tbl-templates', 1)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-templates">
+                    <thead>
                         <tr>
-                            <td><c:out value="${t.id}"/></td>
-                            <td><strong><c:out value="${t.nama_template}"/></strong></td>
-                            <td><c:out value="${t.uploaded_at}"/></td>
+                            <th>ID</th>
+                            <th>Nama Template</th>
+                            <th>Tanggal Upload</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty templates}">
-                        <tr>
-                            <td colspan="3" class="text-center">Belum ada template XML tersimpan.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="t" items="${templates}">
+                            <tr>
+                                <td><c:out value="${t.id}"/></td>
+                                <td><strong><c:out value="${t.nama_template}"/></strong></td>
+                                <td><c:out value="${t.uploaded_at}"/></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty templates}">
+                            <tr>
+                                <td colspan="3" class="text-center">Belum ada template XML tersimpan.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

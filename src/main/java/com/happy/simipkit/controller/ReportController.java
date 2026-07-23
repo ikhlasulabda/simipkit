@@ -1,6 +1,7 @@
 package com.happy.simipkit.controller;
 
 import com.happy.simipkit.model.Client;
+import com.happy.simipkit.model.PortfolioAsset;
 import com.happy.simipkit.model.PortfolioReportSummary;
 import com.happy.simipkit.service.AuditLogService;
 import com.happy.simipkit.service.ClientService;
@@ -11,7 +12,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -67,12 +70,15 @@ public class ReportController {
         Object totalObj = summary.get("total");
         double totalValue = (totalObj instanceof Number) ? ((Number) totalObj).doubleValue() : portfolioService.getTotalPortfolioValue(clientId);
 
+        // Ambil aset sebelum menyimpan summary agar bisa di-snapshot bersama
+        List<PortfolioAsset> assets = portfolioService.getAssetsByClientId(clientId);
+
         PortfolioReportSummary summaryEntity = new PortfolioReportSummary();
         summaryEntity.setClientId(clientId);
         summaryEntity.setPeriode(periode);
         summaryEntity.setTotalNilai(totalValue);
 
-        portfolioService.saveReportSummary(summaryEntity);
+        int summaryId = portfolioService.saveReportSummary(summaryEntity, assets);
 
         Integer userId = (Integer) session.getAttribute("userId");
         auditLogService.logAction(userId, "REPORT_GENERATE", request.getRemoteAddr(),
@@ -82,9 +88,46 @@ public class ReportController {
         model.addAttribute("periode", periode);
         model.addAttribute("summaryMap", summary);
         model.addAttribute("totalValue", totalValue);
-        model.addAttribute("assets", portfolioService.getAssetsByClientId(clientId));
+        model.addAttribute("assets", assets);
+        model.addAttribute("summaryId", summaryId);
         model.addAttribute("success", "Laporan portofolio berhasil dibuat dan disimpan.");
 
         return "report-generate";
+    }
+
+    @GetMapping("/summary/{summaryId}/pdf")
+    public void downloadReportPdf(@PathVariable("summaryId") int summaryId,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  HttpSession session) throws IOException {
+
+        PortfolioReportSummary summary = portfolioService.getSummaryById(summaryId);
+        if (summary == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Laporan tidak ditemukan.");
+            return;
+        }
+
+        Client client = clientService.getClientById(summary.getClientId());
+        if (client == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Klien tidak ditemukan.");
+            return;
+        }
+
+        List<PortfolioAsset> assets = portfolioService.deserializeAssetsSnapshot(summary.getAssetsSnapshot());
+
+        byte[] pdfBytes = reportService.generatePortfolioPdfBytes(client, summary, assets);
+
+        // Filename dibangun dari data DB (summaryId + clientId), bukan dari input user
+        String filename = "laporan-" + summaryId + "-" + summary.getClientId() + ".pdf";
+
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + filename + "\"");
+        response.setContentLength(pdfBytes.length);
+        response.getOutputStream().write(pdfBytes);
+        response.getOutputStream().flush();
+
+        Integer userId = (Integer) session.getAttribute("userId");
+        auditLogService.logAction(userId, "REPORT_PDF_DOWNLOAD", request.getRemoteAddr(),
+                "Download PDF laporan portofolio client: " + summary.getClientId() + " summary id: " + summaryId);
     }
 }

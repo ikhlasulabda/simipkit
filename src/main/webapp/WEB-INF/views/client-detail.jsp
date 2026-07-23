@@ -50,8 +50,8 @@
                 </div>
                 <div>
                     <p><strong>Alamat:</strong> <c:out value="${client.alamat}"/></p>
-                    <p><strong>Status KYC:</strong> 
-                        <span style="font-weight: 600; color: ${client.statusKyc == 'VERIFIED' ? '#166534' : (client.statusKyc == 'REJECTED' ? '#991b1b' : '#b45309')};">
+                    <p><strong>Status KYC:</strong>
+                        <span style="font-weight: 600; color: ${client.statusKyc == 'VERIFIED' ? 'var(--status-green)' : (client.statusKyc == 'REJECTED' ? 'var(--status-red)' : 'var(--status-amber)')};">
                             <c:out value="${client.statusKyc}"/>
                         </span>
                     </p>
@@ -67,35 +67,42 @@
                     <a href="<c:url value='/documents/upload/${client.id}'/>" class="btn btn-sm btn-primary">Upload Dokumen KYC</a>
                 </div>
             </div>
-            <table class="mt-10">
-                <thead>
-                    <tr>
-                        <th>ID Dokumen</th>
-                        <th>Jenis Dokumen</th>
-                        <th>Nama File Asli</th>
-                        <th>Nama File Stored</th>
-                        <th>Ukuran File (Bytes)</th>
-                        <th>Waktu Upload</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="doc" items="${documents}">
+            <div class="table-search-bar" style="margin-top: 10px;">
+                <input type="text" id="search-kyc-docs" class="table-search-input"
+                       placeholder="Cari nama file dokumen..."
+                       oninput="tableSearch(this, 'tbl-kyc-docs', 2)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-kyc-docs" class="mt-10">
+                    <thead>
                         <tr>
-                            <td class="mono"><c:out value="${doc.id}"/></td>
-                            <td><c:out value="${doc.jenisDokumen}"/></td>
-                            <td><c:out value="${doc.namaFileAsli}"/></td>
-                            <td class="mono"><c:out value="${doc.namaFileStored}"/></td>
-                            <td><c:out value="${doc.fileSizeBytes}"/> B</td>
-                            <td><c:out value="${doc.uploadedAt}"/></td>
+                            <th>ID Dokumen</th>
+                            <th>Jenis Dokumen</th>
+                            <th>Nama File Asli</th>
+                            <th>Nama File Stored</th>
+                            <th>Ukuran File (Bytes)</th>
+                            <th>Waktu Upload</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty documents}">
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada dokumen KYC terlampir untuk klien ini.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="doc" items="${documents}">
+                            <tr>
+                                <td class="mono"><c:out value="${doc.id}"/></td>
+                                <td><c:out value="${doc.jenisDokumen}"/></td>
+                                <td><c:out value="${doc.namaFileAsli}"/></td>
+                                <td class="mono"><c:out value="${doc.namaFileStored}"/></td>
+                                <td><c:out value="${doc.fileSizeBytes}"/> B</td>
+                                <td><c:out value="${doc.uploadedAt}"/></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty documents}">
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada dokumen KYC terlampir untuk klien ini.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="card">
@@ -105,34 +112,42 @@
                     <a href="<c:url value='/portfolio/list/${client.id}'/>" class="btn btn-sm btn-secondary">Kelola Portofolio</a>
                 </div>
             </div>
-            <table class="mt-10">
-                <thead>
-                    <tr>
-                        <th>Jenis Instrumen</th>
-                        <th>Nama Instrumen</th>
-                        <th>Jumlah Unit</th>
-                        <th>Nilai Investasi (IDR)</th>
-                        <th>Alokasi (%)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="a" items="${assets}">
+            <div class="table-search-bar" style="margin-top: 10px;">
+                <input type="text" id="search-assets" class="table-search-input"
+                       placeholder="Cari nama instrumen..."
+                       oninput="tableSearch(this, 'tbl-assets', 1)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-assets" class="mt-10">
+                    <thead>
                         <tr>
-                            <td><c:out value="${a.jenisInstrumen}"/></td>
-                            <td><c:out value="${a.namaInstrumen}"/></td>
-                            <td><c:out value="${a.jumlah}"/></td>
-                            <td>Rp <c:out value="${a.nilai}"/></td>
-                            <td><c:out value="${a.allocationPercent}"/>%</td>
+                            <th>Jenis Instrumen</th>
+                            <th>Nama Instrumen</th>
+                            <th>Jumlah Unit</th>
+                            <th>Nilai Investasi (IDR)</th>
+                            <th>Alokasi (%)</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty assets}">
-                        <tr>
-                            <td colspan="5" class="text-center">Belum ada aset portofolio terdaftar.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="a" items="${assets}">
+                            <tr>
+                                <td><c:out value="${a.jenisInstrumen}"/></td>
+                                <td><c:out value="${a.namaInstrumen}"/></td>
+                                <td><c:out value="${a.jumlah}"/></td>
+                                <td>Rp <c:out value="${a.nilai}"/></td>
+                                <td><c:out value="${a.allocationPercent}"/>%</td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty assets}">
+                            <tr>
+                                <td colspan="5" class="text-center">Belum ada aset portofolio terdaftar.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

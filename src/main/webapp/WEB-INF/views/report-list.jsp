@@ -54,38 +54,46 @@
 
         <div class="card">
             <div class="card-title">Histori Summary Laporan Terbit</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Summary</th>
-                        <th>ID Klien</th>
-                        <th>Periode Laporan</th>
-                        <th>Total Nilai Portofolio (IDR)</th>
-                        <th>Tanggal Diterbitkan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="s" items="${summaries}">
+            <div class="table-search-bar">
+                <input type="text" id="search-report-list" class="table-search-input"
+                       placeholder="Cari periode laporan..."
+                       oninput="tableSearch(this, 'tbl-report-list', 2)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-report-list">
+                    <thead>
                         <tr>
-                            <td><c:out value="${s.id}"/></td>
-                            <td class="mono"><c:out value="${s.clientId}"/></td>
-                            <td><strong><c:out value="${s.periode}"/></strong></td>
-                            <td>Rp <c:out value="${s.totalNilai}"/></td>
-                            <td><c:out value="${s.generatedAt}"/></td>
-                            <td>
-                                <a href="<c:url value='/portfolio/report/${s.clientId}?periode=${s.periode}'/>" class="btn btn-sm">Lihat Detail</a>
-                            </td>
+                            <th>ID Summary</th>
+                            <th>ID Klien</th>
+                            <th>Periode Laporan</th>
+                            <th>Total Nilai Portofolio (IDR)</th>
+                            <th>Tanggal Diterbitkan</th>
+                            <th>Aksi</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty summaries}">
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada summary laporan diterbitkan.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="s" items="${summaries}">
+                            <tr>
+                                <td><c:out value="${s.id}"/></td>
+                                <td class="mono"><c:out value="${s.clientId}"/></td>
+                                <td><strong><c:out value="${s.periode}"/></strong></td>
+                                <td>Rp <c:out value="${s.totalNilai}"/></td>
+                                <td><c:out value="${s.generatedAt}"/></td>
+                                <td>
+                                    <a href="<c:url value='/portfolio/report/${s.clientId}?periode=${s.periode}'/>" class="btn btn-sm">Lihat Detail</a>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty summaries}">
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada summary laporan diterbitkan.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

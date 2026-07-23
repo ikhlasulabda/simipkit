@@ -39,36 +39,44 @@
 
         <div class="card">
             <div class="card-title">Riwayat Aktivitas Sistem</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Log</th>
-                        <th>User ID</th>
-                        <th>Aksi / Event</th>
-                        <th>IP Address</th>
-                        <th>Detail Keterangan</th>
-                        <th>Waktu Kejadian</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="log" items="${logs}">
+            <div class="table-search-bar">
+                <input type="text" id="search-audit-log" class="table-search-input"
+                       placeholder="Cari aksi atau event..."
+                       oninput="tableSearch(this, 'tbl-audit-log', 2)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-audit-log">
+                    <thead>
                         <tr>
-                            <td><c:out value="${log.id}"/></td>
-                            <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
-                            <td><strong><c:out value="${log.action}"/></strong></td>
-                            <td class="mono"><c:out value="${log.ipAddress}"/></td>
-                            <td><c:out value="${log.detail}"/></td>
-                            <td><c:out value="${log.timestamp}"/></td>
+                            <th>ID Log</th>
+                            <th>User ID</th>
+                            <th>Aksi / Event</th>
+                            <th>IP Address</th>
+                            <th>Detail Keterangan</th>
+                            <th>Waktu Kejadian</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty logs}">
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada entri audit log.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="log" items="${logs}">
+                            <tr>
+                                <td><c:out value="${log.id}"/></td>
+                                <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
+                                <td><strong><c:out value="${log.action}"/></strong></td>
+                                <td class="mono"><c:out value="${log.ipAddress}"/></td>
+                                <td><c:out value="${log.detail}"/></td>
+                                <td><c:out value="${log.timestamp}"/></td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty logs}">
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada entri audit log.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

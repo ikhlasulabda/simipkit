@@ -41,51 +41,59 @@
         </div>
 
         <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID User</th>
-                        <th>Username</th>
-                        <th>Role Access</th>
-                        <th>Status Akun</th>
-                        <th>Tanggal Dibuat</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="u" items="${users}">
+            <div class="card-title">Daftar Pengguna</div>
+            <div class="table-search-bar">
+                <input type="text" id="search-user-management" class="table-search-input"
+                       placeholder="Cari username..."
+                       oninput="tableSearch(this, 'tbl-user-management', 1)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-user-management">
+                    <thead>
                         <tr>
-                            <td><c:out value="${u.id}"/></td>
-                            <td><strong><c:out value="${u.username}"/></strong></td>
-                            <td>
-                                <span class="role-badge" style="background-color: ${u.role == 'admin' ? '#0f172a' : '#475569'};">
-                                    <c:out value="${u.role}"/>
-                                </span>
-                            </td>
-                            <td>
-                                <span style="font-weight: 600; color: ${u.active ? '#166534' : '#991b1b'};">
-                                    ${u.active ? 'AKTIF' : 'NON-AKTIF'}
-                                </span>
-                            </td>
-                            <td><c:out value="${u.createdAt}"/></td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="<c:url value='/user-management/edit/${u.id}'/>" class="btn btn-sm">Edit</a>
-                                    <c:if test="${u.id != sessionScope.userId}">
-                                        <a href="<c:url value='/user-management/delete/${u.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?');">Hapus</a>
-                                    </c:if>
-                                </div>
-                            </td>
+                            <th>ID User</th>
+                            <th>Username</th>
+                            <th>Role Access</th>
+                            <th>Status Akun</th>
+                            <th>Tanggal Dibuat</th>
+                            <th>Aksi</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty users}">
-                        <tr>
-                            <td colspan="6" class="text-center">Belum ada user terdaftar.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="u" items="${users}">
+                            <tr>
+                                <td><c:out value="${u.id}"/></td>
+                                <td><strong><c:out value="${u.username}"/></strong></td>
+                                <td>
+                                    <span class="role-badge" style="background-color: ${u.role == 'admin' ? 'var(--primary)' : 'var(--secondary)'};">
+                                        <c:out value="${u.role}"/>
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="font-weight: 600; color: ${u.active ? 'var(--status-green)' : 'var(--status-red)'};"
+                                    >${u.active ? 'AKTIF' : 'NON-AKTIF'}</span>
+                                </td>
+                                <td><c:out value="${u.createdAt}"/></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="<c:url value='/user-management/edit/${u.id}'/>" class="btn btn-sm">Edit</a>
+                                        <c:if test="${u.id != sessionScope.userId}">
+                                            <a href="<c:url value='/user-management/delete/${u.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?');">Hapus</a>
+                                        </c:if>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty users}">
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada user terdaftar.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

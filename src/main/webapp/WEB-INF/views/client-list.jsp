@@ -41,49 +41,58 @@
         </div>
 
         <div class="card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Klien</th>
-                        <th>Nama Lengkap</th>
-                        <th>NIK</th>
-                        <th>Alamat</th>
-                        <th>Status KYC</th>
-                        <th>Tanggal Daftar</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="c" items="${clients}">
+            <div class="card-title">Daftar Klien</div>
+            <div class="table-search-bar">
+                <input type="text" id="search-client-list" class="table-search-input"
+                       placeholder="Cari nama klien..."
+                       oninput="tableSearch(this, 'tbl-client-list', 1)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-client-list">
+                    <thead>
                         <tr>
-                            <td class="mono"><c:out value="${c.id}"/></td>
-                            <td><strong><c:out value="${c.nama}"/></strong></td>
-                            <td class="mono"><c:out value="${c.nik}"/></td>
-                            <td><c:out value="${c.alamat}"/></td>
-                            <td>
-                                <span style="font-weight: 600; color: ${c.statusKyc == 'VERIFIED' ? '#166534' : (c.statusKyc == 'REJECTED' ? '#991b1b' : '#b45309')};">
-                                    <c:out value="${c.statusKyc}"/>
-                                </span>
-                            </td>
-                            <td><c:out value="${c.createdAt}"/></td>
-                            <td>
-                                <div class="btn-group">
-                                    <a href="<c:url value='/clients/detail/${c.id}'/>" class="btn btn-sm">Detail</a>
-                                    <a href="<c:url value='/portfolio/list/${c.id}'/>" class="btn btn-sm btn-secondary">Portofolio</a>
-                                    <a href="<c:url value='/clients/edit/${c.id}'/>" class="btn btn-sm">Edit</a>
-                                    <a href="<c:url value='/clients/delete/${c.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data klien ini?');">Hapus</a>
-                                </div>
-                            </td>
+                            <th>ID Klien</th>
+                            <th>Nama Lengkap</th>
+                            <th>NIK</th>
+                            <th>Alamat</th>
+                            <th>Status KYC</th>
+                            <th>Tanggal Daftar</th>
+                            <th>Aksi</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty clients}">
-                        <tr>
-                            <td colspan="7" class="text-center">Belum ada data klien terdaftar.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="c" items="${clients}">
+                            <tr>
+                                <td class="mono"><c:out value="${c.id}"/></td>
+                                <td><strong><c:out value="${c.nama}"/></strong></td>
+                                <td class="mono"><c:out value="${c.nik}"/></td>
+                                <td><c:out value="${c.alamat}"/></td>
+                                <td>
+                                    <span style="font-weight: 600; color: ${c.statusKyc == 'VERIFIED' ? 'var(--status-green)' : (c.statusKyc == 'REJECTED' ? 'var(--status-red)' : 'var(--status-amber)')};">
+                                        <c:out value="${c.statusKyc}"/>
+                                    </span>
+                                </td>
+                                <td><c:out value="${c.createdAt}"/></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a href="<c:url value='/clients/detail/${c.id}'/>" class="btn btn-sm">Detail</a>
+                                        <a href="<c:url value='/portfolio/list/${c.id}'/>" class="btn btn-sm btn-secondary">Portofolio</a>
+                                        <a href="<c:url value='/clients/edit/${c.id}'/>" class="btn btn-sm">Edit</a>
+                                        <a href="<c:url value='/clients/delete/${c.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data klien ini?');">Hapus</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty clients}">
+                            <tr>
+                                <td colspan="7" class="text-center">Belum ada data klien terdaftar.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>

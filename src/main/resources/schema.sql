@@ -57,6 +57,8 @@ CREATE TABLE IF NOT EXISTS portfolio_report_summary (
     FOREIGN KEY (client_id) REFERENCES clients(id) ON DELETE CASCADE
 );
 
+ALTER TABLE portfolio_report_summary ADD COLUMN IF NOT EXISTS assets_snapshot LONGTEXT;
+
 CREATE TABLE IF NOT EXISTS bank_sync_events (
     id INT AUTO_INCREMENT PRIMARY KEY,
     event_type VARCHAR(50) NOT NULL,

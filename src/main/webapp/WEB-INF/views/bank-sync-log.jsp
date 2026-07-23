@@ -39,40 +39,47 @@
 
         <div class="card">
             <div class="card-title">Event Transaksi Diterima</div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID Event</th>
-                        <th>Tipe Event</th>
-                        <th>Status</th>
-                        <th>Waktu Diproses</th>
-                        <th>Payload JSON Raw</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <c:forEach var="e" items="${events}">
+            <div class="table-search-bar">
+                <input type="text" id="search-bank-sync" class="table-search-input"
+                       placeholder="Cari tipe event..."
+                       oninput="tableSearch(this, 'tbl-bank-sync-log', 1)">
+            </div>
+            <div class="table-scroll-container">
+                <table id="tbl-bank-sync-log">
+                    <thead>
                         <tr>
-                            <td><c:out value="${e.id}"/></td>
-                            <td><strong><c:out value="${e.event_type}"/></strong></td>
-                            <td>
-                                <span style="font-weight: 600; color: ${e.status == 'PROCESSED' ? '#166534' : '#b45309'};">
-                                    <c:out value="${e.status}"/>
-                                </span>
-                            </td>
-                            <td><c:out value="${e.processed_at}"/></td>
-                            <td class="mono" style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                <c:out value="${e.payload_raw}"/>
-                            </td>
+                            <th>ID Event</th>
+                            <th>Tipe Event</th>
+                            <th>Status</th>
+                            <th>Waktu Diproses</th>
+                            <th>Payload JSON Raw</th>
                         </tr>
-                    </c:forEach>
-                    <c:if test="${empty events}">
-                        <tr>
-                            <td colspan="5" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
-                        </tr>
-                    </c:if>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="e" items="${events}">
+                            <tr>
+                                <td><c:out value="${e.id}"/></td>
+                                <td><strong><c:out value="${e.event_type}"/></strong></td>
+                                <td>
+                                    <span style="font-weight: 600; color: ${e.status == 'PROCESSED' ? 'var(--status-green)' : 'var(--status-amber)'};"
+                                    ><c:out value="${e.status}"/></span>
+                                </td>
+                                <td><c:out value="${e.processed_at}"/></td>
+                                <td class="mono" style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                    <c:out value="${e.payload_raw}"/>
+                                </td>
+                            </tr>
+                        </c:forEach>
+                        <c:if test="${empty events}">
+                            <tr>
+                                <td colspan="5" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>
+<script src="<c:url value='/resources/js/table-search.js'/>"></script>
 </html>
