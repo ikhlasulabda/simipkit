@@ -15,8 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
@@ -84,10 +82,10 @@ public class ReportService {
         dbf.setExpandEntityReferences(false);
 
         DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new InputSource(new StringReader(xmlContent)));
-        doc.getDocumentElement().normalize();
+        org.w3c.dom.Document xmlDoc = db.parse(new InputSource(new StringReader(xmlContent)));
+        xmlDoc.getDocumentElement().normalize();
 
-        Element root = doc.getDocumentElement();
+        org.w3c.dom.Element root = xmlDoc.getDocumentElement();
         if (!"reportTemplate".equals(root.getNodeName())) {
             throw new IllegalArgumentException("Root element must be <reportTemplate>.");
         }
@@ -116,7 +114,7 @@ public class ReportService {
 
         NodeList tableList = root.getElementsByTagName("table");
         if (tableList.getLength() > 0) {
-            Element tableElem = (Element) tableList.item(0);
+            org.w3c.dom.Element tableElem = (org.w3c.dom.Element) tableList.item(0);
             NodeList colsList = tableElem.getElementsByTagName("column");
             if (colsList.getLength() > 0) {
                 List<String> parsedCols = new ArrayList<>();
