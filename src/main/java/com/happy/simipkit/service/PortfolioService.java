@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -132,9 +133,9 @@ public class PortfolioService {
             sb.append("{");
             sb.append("\"jenisInstrumen\":\"").append(escapeJsonString(a.getJenisInstrumen())).append("\",");
             sb.append("\"namaInstrumen\":\"").append(escapeJsonString(a.getNamaInstrumen())).append("\",");
-            sb.append("\"jumlah\":").append(a.getJumlah()).append(",");
-            sb.append("\"nilai\":").append(a.getNilai()).append(",");
-            sb.append("\"allocationPercent\":").append(a.getAllocationPercent());
+            sb.append("\"jumlah\":").append(BigDecimal.valueOf(a.getJumlah()).toPlainString()).append(",");
+            sb.append("\"nilai\":").append(BigDecimal.valueOf(a.getNilai()).toPlainString()).append(",");
+            sb.append("\"allocationPercent\":").append(BigDecimal.valueOf(a.getAllocationPercent()).toPlainString());
             sb.append("}");
         }
         sb.append("]");
@@ -199,7 +200,7 @@ public class PortfolioService {
         int end = start;
         while (end < obj.length()) {
             char c = obj.charAt(end);
-            if (Character.isDigit(c) || c == '.' || c == '-') {
+            if (Character.isDigit(c) || c == '.' || c == '-' || c == '+' || c == 'E' || c == 'e') {
                 end++;
             } else {
                 break;
