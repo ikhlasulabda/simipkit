@@ -3,10 +3,14 @@ package com.happy.simipkit.controller;
 import com.happy.simipkit.model.Client;
 import com.happy.simipkit.model.PortfolioAsset;
 import com.happy.simipkit.model.PortfolioReportSummary;
+import com.happy.simipkit.model.ReportLayoutConfig;
 import com.happy.simipkit.service.AuditLogService;
 import com.happy.simipkit.service.ClientService;
 import com.happy.simipkit.service.PortfolioService;
 import com.happy.simipkit.service.ReportService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,16 +26,22 @@ import java.util.Map;
 @RequestMapping("/reports")
 public class ReportController {
 
+    private static final Logger logger = LogManager.getLogger(ReportController.class);
+
     private final ReportService reportService;
     private final ClientService clientService;
     private final PortfolioService portfolioService;
     private final AuditLogService auditLogService;
+    private final JdbcTemplate jdbcTemplate;
 
-    public ReportController(ReportService reportService, ClientService clientService, PortfolioService portfolioService, AuditLogService auditLogService) {
+    public ReportController(ReportService reportService, ClientService clientService,
+                            PortfolioService portfolioService, AuditLogService auditLogService,
+                            JdbcTemplate jdbcTemplate) {
         this.reportService = reportService;
         this.clientService = clientService;
         this.portfolioService = portfolioService;
         this.auditLogService = auditLogService;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @GetMapping
@@ -51,6 +61,11 @@ public class ReportController {
         model.addAttribute("client", client);
         model.addAttribute("assets", portfolioService.getAssetsByClientId(clientId));
         model.addAttribute("totalValue", portfolioService.getTotalPortfolioValue(clientId));
+
+        // Fetch templates for popup selection
+        String sqlTemplates = "SELECT id, nama_template FROM report_templates ORDER BY uploaded_at DESC";
+        model.addAttribute("templates", jdbcTemplate.queryForList(sqlTemplates));
+
         return "report-generate";
     }
 
@@ -92,11 +107,16 @@ public class ReportController {
         model.addAttribute("summaryId", summaryId);
         model.addAttribute("success", "Laporan portofolio berhasil dibuat dan disimpan.");
 
+        // Fetch templates for popup selection
+        String sqlTemplates = "SELECT id, nama_template FROM report_templates ORDER BY uploaded_at DESC";
+        model.addAttribute("templates", jdbcTemplate.queryForList(sqlTemplates));
+
         return "report-generate";
     }
 
     @GetMapping("/summary/{summaryId}/pdf")
     public void downloadReportPdf(@PathVariable("summaryId") int summaryId,
+                                  @RequestParam(value = "templateId", required = false) String templateIdStr,
                                   HttpServletRequest request,
                                   HttpServletResponse response,
                                   HttpSession session) throws IOException {
@@ -115,9 +135,51 @@ public class ReportController {
 
         List<PortfolioAsset> assets = portfolioService.deserializeAssetsSnapshot(summary.getAssetsSnapshot());
 
-        byte[] pdfBytes = reportService.generatePortfolioPdfBytes(client, summary, assets);
+        ReportLayoutConfig layoutConfig = new ReportLayoutConfig(); // Default layout
+        boolean templateApplied = false;
+        String fallbackReason = null;
 
-        // Filename dibangun dari data DB (summaryId + clientId), bukan dari input user
+        if (templateIdStr != null && !templateIdStr.trim().isEmpty()) {
+            try {
+                int templateId = Integer.parseInt(templateIdStr.trim());
+
+                // Parameterized query (no string concatenation)
+                String sql = "SELECT nama_template, xml_content FROM report_templates WHERE id = ?";
+                List<Map<String, Object>> rows = jdbcTemplate.queryForList(sql, templateId);
+
+                if (rows.isEmpty()) {
+                    fallbackReason = "Template ID " + templateId + " tidak ditemukan";
+                } else {
+                    Map<String, Object> row = rows.get(0);
+                    String namaTemplate = (String) row.get("nama_template");
+                    String xmlContent = (String) row.get("xml_content");
+
+                    try {
+                        layoutConfig = reportService.parseReportLayoutTemplate(xmlContent);
+                        templateApplied = true;
+                    } catch (Exception parseEx) {
+                        logger.warn("Gagal parse template ID {}: {}", templateId, parseEx.getMessage());
+                        fallbackReason = "Template \"" + namaTemplate + "\" error";
+                    }
+                }
+            } catch (NumberFormatException nfe) {
+                fallbackReason = "Format templateId tidak valid";
+            } catch (Exception ex) {
+                logger.warn("Gagal memproses template ID {}: {}", templateIdStr, ex.getMessage());
+                fallbackReason = "Gagal memproses template";
+            }
+        }
+
+        // Response Headers for template status
+        response.setHeader("X-Template-Applied", String.valueOf(templateApplied));
+        if (!templateApplied && fallbackReason != null) {
+            // CRLF Header Sanitization (Strip \r and \n to prevent Header Injection)
+            String sanitizedReason = fallbackReason.replaceAll("[\\r\\n]", " ").trim();
+            response.setHeader("X-Template-Fallback-Reason", sanitizedReason);
+        }
+
+        byte[] pdfBytes = reportService.generatePortfolioPdfBytes(client, summary, assets, layoutConfig);
+
         String filename = "laporan-" + summaryId + "-" + summary.getClientId() + ".pdf";
 
         response.setContentType("application/pdf");
@@ -128,7 +190,8 @@ public class ReportController {
 
         Integer userId = (Integer) session.getAttribute("userId");
         auditLogService.logAction(userId, "REPORT_PDF_DOWNLOAD", request.getRemoteAddr(),
-                "Download PDF laporan portofolio client: " + summary.getClientId() + " summary id: " + summaryId);
+                "Download PDF laporan portofolio client: " + summary.getClientId() + " summary id: " + summaryId +
+                " (Template applied: " + templateApplied + ")");
     }
 
     @PostMapping("/summary/delete/{id}")

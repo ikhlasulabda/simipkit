@@ -45,7 +45,10 @@
         </c:if>
 
         <div class="card mb-20" style="max-width: 700px;">
-            <div class="card-title">Unggah & Test Parse Template XML</div>
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Unggah & Test Parse Template XML</span>
+                <button type="button" class="btn btn-sm btn-secondary" id="btn-show-example-modal">Lihat Contoh Template</button>
+            </div>
 
             <form action="<c:url value='/report-template-upload'/>" method="post" enctype="multipart/form-data">
                 <div class="form-group">
@@ -112,5 +115,6 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/template-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>

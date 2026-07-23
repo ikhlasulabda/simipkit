@@ -101,6 +101,14 @@
             </table>
         </div>
     </div>
-</body>
+<script>
+window.REPORT_TEMPLATES = [
+    <c:forEach var="t" items="${templates}" varStatus="s">
+        { id: ${t.id}, nama_template: '${com.happy.simipkit.util.JsStringUtil.escape(t.nama_template)}' }<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+];
+</script>
+<script src="<c:url value='/resources/js/template-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
+</body>
 </html>

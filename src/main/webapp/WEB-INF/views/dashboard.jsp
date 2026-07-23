@@ -38,7 +38,7 @@
             </div>
         </div>
 
-        <%-- === 4 STAT CARDS (compacted, original content preserved) === --%>
+        <%-- === BARIS 1: 4 STAT CARDS (compacted, original content) === --%>
         <div class="grid-4">
             <div class="stat-card stat-card-compact">
                 <div class="label">Total Klien Terdaftar</div>
@@ -58,114 +58,101 @@
             </div>
         </div>
 
-        <%-- === ANALYTICS + AUDIT LOG (side by side) === --%>
-        <div class="dashboard-analytics">
-
-            <%-- LEFT: Analytics Charts --%>
-            <div class="analytics-column">
-
-                <%-- Hero: AUM Growth Trend --%>
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <div class="chart-title">Trend Pertumbuhan AUM</div>
-                        <div class="chart-summary"><c:out value="${totalAum}"/> Total AUM</div>
-                    </div>
-                    <div class="chart-canvas-wrap chart-canvas-hero">
-                        <canvas id="chartAumTrend"></canvas>
-                    </div>
+        <%-- === BARIS 2: HERO CHART -- Trend Pertumbuhan AUM (full width) === --%>
+        <div class="dashboard-section">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Trend Pertumbuhan AUM</div>
+                    <div class="chart-summary"><c:out value="${totalAum}"/> Total AUM</div>
                 </div>
-
-                <%-- 2x2 Grid of smaller charts --%>
-                <div class="chart-grid">
-
-                    <%-- Donut: Instrument allocation --%>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Alokasi AUM per Instrumen</div>
-                            <div class="chart-summary-sm"><c:out value="${instrLabels.size()}"/> jenis instrumen</div>
-                        </div>
-                        <div class="chart-canvas-wrap chart-canvas-sm">
-                            <canvas id="chartInstrumen"></canvas>
-                        </div>
-                    </div>
-
-                    <%-- Horizontal Bar: Top 5 clients --%>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Top 5 Klien AUM Terbesar</div>
-                            <div class="chart-summary-sm"><c:out value="${topNames.size()}"/> klien</div>
-                        </div>
-                        <div class="chart-canvas-wrap chart-canvas-sm">
-                            <canvas id="chartTopClients"></canvas>
-                        </div>
-                    </div>
-
-                    <%-- Bar: KYC status --%>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Distribusi Status KYC</div>
-                            <div class="chart-summary-sm"><c:out value="${kycLabels.size()}"/> status</div>
-                        </div>
-                        <div class="chart-canvas-wrap chart-canvas-sm">
-                            <canvas id="chartKycStatus"></canvas>
-                        </div>
-                    </div>
-
-                    <%-- Donut: Document type --%>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <div class="chart-title">Distribusi Jenis Dokumen</div>
-                            <div class="chart-summary-sm"><c:out value="${docLabels.size()}"/> jenis</div>
-                        </div>
-                        <div class="chart-canvas-wrap chart-canvas-sm">
-                            <canvas id="chartDocType"></canvas>
-                        </div>
-                    </div>
-
+                <div class="chart-canvas-wrap chart-canvas-hero">
+                    <canvas id="chartAumTrend"></canvas>
                 </div>
             </div>
-
-            <%-- RIGHT: Audit Log Table --%>
-            <div class="auditlog-column">
-                <div class="card card-sticky-log">
-                    <div class="card-title">Audit Log Aktivitas Terakhir</div>
-                    <div class="table-scroll-container">
-                        <table id="tbl-dashboard-log">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>User ID</th>
-                                    <th>Aksi</th>
-                                    <th>IP Address</th>
-                                    <th>Detail</th>
-                                    <th>Waktu</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="log" items="${recentAuditLogs}" varStatus="status">
-                                    <c:if test="${status.index < 10}">
-                                        <tr>
-                                            <td><c:out value="${log.id}"/></td>
-                                            <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
-                                            <td><c:out value="${log.action}"/></td>
-                                            <td class="mono"><c:out value="${log.ipAddress}"/></td>
-                                            <td><c:out value="${log.detail}"/></td>
-                                            <td><c:out value="${log.timestamp}"/></td>
-                                        </tr>
-                                    </c:if>
-                                </c:forEach>
-                                <c:if test="${empty recentAuditLogs}">
-                                    <tr>
-                                        <td colspan="6" class="text-center">Belum ada aktivitas tercatat.</td>
-                                    </tr>
-                                </c:if>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
+        <%-- === BARIS 3: Alokasi Instrumen (kiri) | Top 5 Klien (kanan) === --%>
+        <div class="chart-row">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Alokasi AUM per Instrumen</div>
+                    <div class="chart-summary-sm"><c:out value="${instrLabels.size()}"/> jenis instrumen</div>
+                </div>
+                <div class="chart-canvas-wrap chart-canvas-sm">
+                    <canvas id="chartInstrumen"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Top 5 Klien AUM Terbesar</div>
+                    <div class="chart-summary-sm"><c:out value="${topNames.size()}"/> klien</div>
+                </div>
+                <div class="chart-canvas-wrap chart-canvas-sm">
+                    <canvas id="chartTopClients"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%-- === BARIS 4: Status KYC (kiri) | Jenis Dokumen (kanan) === --%>
+        <div class="chart-row">
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Distribusi Status KYC</div>
+                    <div class="chart-summary-sm"><c:out value="${kycLabels.size()}"/> status</div>
+                </div>
+                <div class="chart-canvas-wrap chart-canvas-sm">
+                    <canvas id="chartKycStatus"></canvas>
+                </div>
+            </div>
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">Distribusi Jenis Dokumen</div>
+                    <div class="chart-summary-sm"><c:out value="${docLabels.size()}"/> jenis</div>
+                </div>
+                <div class="chart-canvas-wrap chart-canvas-sm">
+                    <canvas id="chartDocType"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <%-- === BARIS 5: AUDIT LOG (full width, paling bawah) === --%>
+        <div class="card audit-log-bottom">
+            <div class="card-title">Audit Log Aktivitas Terakhir</div>
+            <div class="table-scroll-container">
+                <table id="tbl-dashboard-log">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Aksi</th>
+                            <th>IP Address</th>
+                            <th>Detail</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <c:forEach var="log" items="${recentAuditLogs}" varStatus="status">
+                            <c:if test="${status.index < 10}">
+                                <tr>
+                                    <td><c:out value="${log.id}"/></td>
+                                    <td><c:out value="${log.userId != null ? log.userId : '-'}"/></td>
+                                    <td><c:out value="${log.action}"/></td>
+                                    <td class="mono"><c:out value="${log.ipAddress}"/></td>
+                                    <td><c:out value="${log.detail}"/></td>
+                                    <td><c:out value="${log.timestamp}"/></td>
+                                </tr>
+                            </c:if>
+                        </c:forEach>
+                        <c:if test="${empty recentAuditLogs}">
+                            <tr>
+                                <td colspan="6" class="text-center">Belum ada aktivitas tercatat.</td>
+                            </tr>
+                        </c:if>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
     </div>
 
 <%-- Embed chart data from server-side model (all strings pre-escaped via JsStringUtil) --%>
