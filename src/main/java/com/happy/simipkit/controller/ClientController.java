@@ -75,7 +75,7 @@ public class ClientController {
         return "client-detail";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteClient(@PathVariable("id") String id, HttpServletRequest request, HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
         clientService.deleteClient(id);

@@ -40,6 +40,12 @@ public class UserService {
     }
 
     public void createUser(User user, String plainPassword) {
+        if (user.getUsername() != null && user.getUsername().length() > 50) {
+            user.setUsername(user.getUsername().substring(0, 50));
+        }
+        if (plainPassword != null && plainPassword.length() > 100) {
+            plainPassword = plainPassword.substring(0, 100);
+        }
         logger.info("Membuat user baru: {}, role: {}", user.getUsername(), user.getRole());
         String passwordHash = PasswordHasher.hash(plainPassword);
         user.setPasswordHash(passwordHash);

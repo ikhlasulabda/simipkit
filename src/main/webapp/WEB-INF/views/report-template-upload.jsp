@@ -50,7 +50,7 @@
             <form action="<c:url value='/report-template-upload'/>" method="post" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="namaTemplate">Nama Template</label>
-                    <input type="text" id="namaTemplate" name="namaTemplate" class="form-control" placeholder="Contoh: Template Triwulan Standard">
+                    <input type="text" id="namaTemplate" name="namaTemplate" class="form-control" placeholder="Contoh: Template Triwulan Standard" maxlength="100">
                 </div>
 
                 <div class="form-group">
@@ -60,7 +60,7 @@
 
                 <div class="form-group">
                     <label for="xmlContent">Atau Input Langsung Konten XML</label>
-                    <textarea id="xmlContent" name="xmlContent" class="form-control mono" rows="8" placeholder="<reportConfig><title>Laporan Portofolio</title></reportConfig>"></textarea>
+                    <textarea id="xmlContent" name="xmlContent" class="form-control mono" rows="8" placeholder="<reportConfig><title>Laporan Portofolio</title></reportConfig>" maxlength="100000"></textarea>
                 </div>
 
                 <div class="form-group mt-20">

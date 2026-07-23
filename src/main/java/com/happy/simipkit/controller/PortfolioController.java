@@ -89,7 +89,7 @@ public class PortfolioController {
         return "portfolio-form";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteAsset(@PathVariable("id") Integer id, HttpServletRequest request, HttpSession session) {
         PortfolioAsset asset = portfolioService.getAssetById(id);
         String clientId = (asset != null) ? asset.getClientId() : "";

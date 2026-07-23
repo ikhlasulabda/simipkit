@@ -58,17 +58,17 @@
 
                 <div class="form-group">
                     <label for="namaInstrumen">Nama Instrumen / Efek</label>
-                    <input type="text" id="namaInstrumen" name="namaInstrumen" class="form-control" value="<c:out value='${asset.namaInstrumen}'/>" placeholder="Contoh: BBCA, Reksa Dana Saham Mandiri" required>
+                    <input type="text" id="namaInstrumen" name="namaInstrumen" class="form-control" value="<c:out value='${asset.namaInstrumen}'/>" placeholder="Contoh: BBCA, Reksa Dana Saham Mandiri" maxlength="100" required>
                 </div>
 
                 <div class="form-group">
                     <label for="jumlah">Jumlah Unit / Lembar</label>
-                    <input type="number" step="any" id="jumlah" name="jumlah" class="form-control" value="<c:out value='${asset.jumlah}'/>" required>
+                    <input type="number" step="any" id="jumlah" name="jumlah" class="form-control" value="<c:out value='${asset.jumlah}'/>" max="999999999999999" oninput="if(this.value.length > 15) this.value = this.value.slice(0, 15);" required>
                 </div>
 
                 <div class="form-group">
                     <label for="nilai">Nilai Total Portofolio (IDR)</label>
-                    <input type="number" step="any" id="nilai" name="nilai" class="form-control" value="<c:out value='${asset.nilai}'/>" required>
+                    <input type="number" step="any" id="nilai" name="nilai" class="form-control" value="<c:out value='${asset.nilai}'/>" max="999999999999999" oninput="if(this.value.length > 15) this.value = this.value.slice(0, 15);" required>
                 </div>
 
                 <div class="form-group mt-20">

@@ -56,7 +56,7 @@
 
                 <div class="form-group">
                     <label for="periode">Periode Laporan</label>
-                    <input type="text" id="periode" name="periode" class="form-control" value="${not empty periode ? periode : '2026-Q3'}" placeholder="Contoh: 2026-Q3, Juli 2026" required>
+                    <input type="text" id="periode" name="periode" class="form-control" value="${not empty periode ? periode : '2026-Q3'}" placeholder="Contoh: 2026-Q3, Juli 2026" maxlength="50" required>
                 </div>
 
                 <div class="form-group mt-20">

@@ -81,10 +81,10 @@
                                 <td><c:out value="${a.updatedAt}"/></td>
                                 <td>
                                     <div class="btn-group">
-                                        <a href="<c:url value='/portfolio/edit/${a.id}'/>" class="btn btn-sm">Edit</a>
-                                        <a href="<c:url value='/portfolio/delete/${a.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Hapus aset ini dari portofolio?');">Hapus</a>
-                                    </div>
-                                </td>
+                                         <a href="<c:url value='/portfolio/edit/${a.id}'/>" class="btn btn-sm">Edit</a>
+                                         <a href="<c:url value='/portfolio/delete/${a.id}'/>" class="btn btn-sm btn-danger btn-confirm-action" data-title="Hapus Aset Portofolio" data-message="Hapus aset portofolio ini dari akun klien?">Hapus</a>
+                                     </div>
+                                 </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty assets}">
@@ -99,4 +99,5 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 </html>

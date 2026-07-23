@@ -77,7 +77,7 @@ public class UserManagementController {
         return "user-form";
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") Integer id, HttpServletRequest request, HttpSession session) {
         Integer currentUserId = (Integer) session.getAttribute("userId");
         User user = userService.findById(id);

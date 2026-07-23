@@ -41,14 +41,28 @@ public class PortfolioService {
 
     public void addAsset(PortfolioAsset asset) {
         logger.info("Menambahkan aset portofolio untuk client: {}, instrumen: {}", asset.getClientId(), asset.getNamaInstrumen());
+        sanitizeAndValidateAsset(asset);
         String sql = "INSERT INTO portfolio_assets (client_id, jenis_instrumen, nama_instrumen, jumlah, nilai, allocation_percent) VALUES (?, ?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, asset.getClientId(), asset.getJenisInstrumen(), asset.getNamaInstrumen(), asset.getJumlah(), asset.getNilai(), asset.getAllocationPercent());
     }
 
     public void updateAsset(PortfolioAsset asset) {
         logger.info("Memperbarui aset portofolio id: {}", asset.getId());
+        sanitizeAndValidateAsset(asset);
         String sql = "UPDATE portfolio_assets SET jenis_instrumen = ?, nama_instrumen = ?, jumlah = ?, nilai = ?, allocation_percent = ? WHERE id = ?";
         jdbcTemplate.update(sql, asset.getJenisInstrumen(), asset.getNamaInstrumen(), asset.getJumlah(), asset.getNilai(), asset.getAllocationPercent(), asset.getId());
+    }
+
+    private void sanitizeAndValidateAsset(PortfolioAsset asset) {
+        if (asset.getNamaInstrumen() != null && asset.getNamaInstrumen().length() > 100) {
+            asset.setNamaInstrumen(asset.getNamaInstrumen().substring(0, 100));
+        }
+        if (asset.getJenisInstrumen() != null && asset.getJenisInstrumen().length() > 50) {
+            asset.setJenisInstrumen(asset.getJenisInstrumen().substring(0, 50));
+        }
+        double maxVal = 999999999999999.0; // 15 digits max limit
+        if (asset.getJumlah() > maxVal) asset.setJumlah(maxVal);
+        if (asset.getNilai() > maxVal) asset.setNilai(maxVal);
     }
 
     public void deleteAsset(Integer id) {
@@ -65,6 +79,9 @@ public class PortfolioService {
 
     public int saveReportSummary(PortfolioReportSummary summary, List<PortfolioAsset> assets) {
         logger.info("Menyimpan summary laporan portofolio untuk client: {}, periode: {}", summary.getClientId(), summary.getPeriode());
+        if (summary.getPeriode() != null && summary.getPeriode().length() > 50) {
+            summary.setPeriode(summary.getPeriode().substring(0, 50));
+        }
         String snapshot = serializeAssetsToJson(assets);
         summary.setAssetsSnapshot(snapshot);
         String sql = "INSERT INTO portfolio_report_summary (client_id, periode, total_nilai, assets_snapshot) VALUES (?, ?, ?, ?)";
@@ -79,6 +96,18 @@ public class PortfolioService {
         }, keyHolder);
         Number key = keyHolder.getKey();
         return key != null ? key.intValue() : -1;
+    }
+
+    public void deleteReportSummary(int summaryId) {
+        logger.info("Menghapus summary laporan portofolio id: {}", summaryId);
+        String sql = "DELETE FROM portfolio_report_summary WHERE id = ?";
+        jdbcTemplate.update(sql, summaryId);
+    }
+
+    public void deleteAllReportSummaries() {
+        logger.info("Menghapus SELURUH summary laporan portofolio");
+        String sql = "DELETE FROM portfolio_report_summary";
+        jdbcTemplate.update(sql);
     }
 
     public List<PortfolioReportSummary> getSummariesByClientId(String clientId) {

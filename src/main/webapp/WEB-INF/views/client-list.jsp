@@ -78,7 +78,7 @@
                                         <a href="<c:url value='/clients/detail/${c.id}'/>" class="btn btn-sm">Detail</a>
                                         <a href="<c:url value='/portfolio/list/${c.id}'/>" class="btn btn-sm btn-secondary">Portofolio</a>
                                         <a href="<c:url value='/clients/edit/${c.id}'/>" class="btn btn-sm">Edit</a>
-                                        <a href="<c:url value='/clients/delete/${c.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data klien ini?');">Hapus</a>
+                                        <a href="<c:url value='/clients/delete/${c.id}'/>" class="btn btn-sm btn-danger btn-confirm-action" data-title="Hapus Data Klien" data-message="Hapus data klien ini beserta seluruh dokumen dan portofolionya? Tindakan ini tidak dapat dibatalkan.">Hapus</a>
                                     </div>
                                 </td>
                             </tr>
@@ -95,4 +95,5 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 </html>

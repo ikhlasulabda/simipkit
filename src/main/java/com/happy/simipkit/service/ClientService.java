@@ -41,6 +41,7 @@ public class ClientService {
         if (client.getStatusKyc() == null || client.getStatusKyc().trim().isEmpty()) {
             client.setStatusKyc("PENDING");
         }
+        sanitizeAndValidateClient(client);
         logger.info("Membuat data klien baru: {}, NIK: {}", client.getNama(), client.getNik());
         String sql = "INSERT INTO clients (id, nama, nik, alamat, status_kyc) VALUES (?, ?, ?, ?, ?)";
         jdbcTemplate.update(sql, client.getId(), client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc());
@@ -48,8 +49,21 @@ public class ClientService {
 
     public void updateClient(Client client) {
         logger.info("Memperbarui data klien id: {}", client.getId());
+        sanitizeAndValidateClient(client);
         String sql = "UPDATE clients SET nama = ?, nik = ?, alamat = ?, status_kyc = ? WHERE id = ?";
         jdbcTemplate.update(sql, client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc(), client.getId());
+    }
+
+    private void sanitizeAndValidateClient(Client client) {
+        if (client.getNama() != null && client.getNama().length() > 100) {
+            client.setNama(client.getNama().substring(0, 100));
+        }
+        if (client.getNik() != null && client.getNik().length() > 20) {
+            client.setNik(client.getNik().substring(0, 20));
+        }
+        if (client.getAlamat() != null && client.getAlamat().length() > 250) {
+            client.setAlamat(client.getAlamat().substring(0, 250));
+        }
     }
 
     public void deleteClient(String id) {

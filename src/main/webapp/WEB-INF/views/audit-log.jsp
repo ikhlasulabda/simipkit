@@ -39,10 +39,16 @@
 
         <div class="card">
             <div class="card-title">Riwayat Aktivitas Sistem</div>
-            <div class="table-search-bar">
+            <div class="table-search-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
                 <input type="text" id="search-audit-log" class="table-search-input"
                        placeholder="Cari aksi atau event..."
                        oninput="tableSearch(this, 'tbl-audit-log', 2)">
+                <c:if test="${sessionScope.role == 'admin'}">
+                    <a href="<c:url value='/audit-log/delete-all'/>"
+                       class="btn btn-sm btn-danger btn-confirm-action"
+                       data-title="Hapus Semua Log Audit"
+                       data-message="Hapus SELURUH catatan log aktivitas audit? Catatan yang dihapus tidak dapat dipulihkan.">Hapus Semua Log</a>
+                </c:if>
             </div>
             <div class="table-scroll-container">
                 <table id="tbl-audit-log">
@@ -79,4 +85,5 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 </html>

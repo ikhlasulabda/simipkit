@@ -42,6 +42,11 @@ public class AuditLogService {
         return jdbcTemplate.query(sql, new AuditLogRowMapper());
     }
 
+    public void deleteAllLogs() {
+        String sql = "DELETE FROM audit_log";
+        jdbcTemplate.update(sql);
+    }
+
     private static class AuditLogRowMapper implements RowMapper<AuditLogEntry> {
         @Override
         public AuditLogEntry mapRow(ResultSet rs, int rowNum) throws SQLException {

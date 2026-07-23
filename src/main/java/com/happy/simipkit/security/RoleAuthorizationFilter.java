@@ -19,7 +19,9 @@ public class RoleAuthorizationFilter implements Filter {
     // Prefix path yang cuma boleh diakses admin
     private static final List<String> ADMIN_ONLY_PATHS = Arrays.asList(
             "/user-management",
-            "/report-template-upload");
+            "/report-template-upload",
+            "/reports/summary/delete",
+            "/audit-log/delete-all");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

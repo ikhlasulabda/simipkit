@@ -46,17 +46,17 @@
 
                 <div class="form-group">
                     <label for="nama">Nama Lengkap</label>
-                    <input type="text" id="nama" name="nama" class="form-control" value="<c:out value='${client.nama}'/>" required>
+                    <input type="text" id="nama" name="nama" class="form-control" value="<c:out value='${client.nama}'/>" maxlength="100" required>
                 </div>
 
                 <div class="form-group">
                     <label for="nik">NIK (Nomor Induk Kependudukan)</label>
-                    <input type="text" id="nik" name="nik" class="form-control" value="<c:out value='${client.nik}'/>" required>
+                    <input type="text" id="nik" name="nik" class="form-control" value="<c:out value='${client.nik}'/>" maxlength="20" required>
                 </div>
 
                 <div class="form-group">
                     <label for="alamat">Alamat Lengkap</label>
-                    <textarea id="alamat" name="alamat" class="form-control" rows="3"><c:out value="${client.alamat}"/></textarea>
+                    <textarea id="alamat" name="alamat" class="form-control" rows="3" maxlength="250"><c:out value="${client.alamat}"/></textarea>
                 </div>
 
                 <div class="form-group">

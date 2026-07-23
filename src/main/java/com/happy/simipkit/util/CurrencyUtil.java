@@ -6,7 +6,7 @@ import java.text.DecimalFormatSymbols;
 /**
  * Utility pemformatan nilai mata uang IDR.
  * Menggunakan format Indonesia: pemisah ribuan titik, tanpa desimal.
- * Rentang aman sampai Rp 999.999.999.999.
+ * Rentang aman sampai Rp 999.999.999.999.999 (15 digit).
  *
  * Contoh output:
  *   10500000.0  ->  "Rp 10.500.000"

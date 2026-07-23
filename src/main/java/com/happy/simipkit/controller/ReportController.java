@@ -130,4 +130,25 @@ public class ReportController {
         auditLogService.logAction(userId, "REPORT_PDF_DOWNLOAD", request.getRemoteAddr(),
                 "Download PDF laporan portofolio client: " + summary.getClientId() + " summary id: " + summaryId);
     }
+
+    @PostMapping("/summary/delete/{id}")
+    public String deleteReportSummary(@PathVariable("id") int summaryId,
+                                       HttpServletRequest request,
+                                       HttpSession session) {
+        portfolioService.deleteReportSummary(summaryId);
+        Integer userId = (Integer) session.getAttribute("userId");
+        auditLogService.logAction(userId, "REPORT_SUMMARY_DELETE", request.getRemoteAddr(),
+                "Hapus summary laporan portofolio ID: " + summaryId);
+        return "redirect:/reports";
+    }
+
+    @PostMapping("/summary/delete-all")
+    public String deleteAllReportSummaries(HttpServletRequest request,
+                                           HttpSession session) {
+        portfolioService.deleteAllReportSummaries();
+        Integer userId = (Integer) session.getAttribute("userId");
+        auditLogService.logAction(userId, "REPORT_SUMMARY_DELETE_ALL", request.getRemoteAddr(),
+                "Hapus SELURUH histori summary laporan portofolio");
+        return "redirect:/reports";
+    }
 }

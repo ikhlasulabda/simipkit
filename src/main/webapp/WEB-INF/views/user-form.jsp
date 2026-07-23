@@ -50,12 +50,12 @@
 
                 <div class="form-group">
                     <label for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" value="<c:out value='${user.username}'/>" required>
+                    <input type="text" id="username" name="username" class="form-control" value="<c:out value='${user.username}'/>" maxlength="50" required>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password ${isNew ? '' : '(Kosongkan jika tidak ingin mengubah)'}</label>
-                    <input type="password" id="password" name="password" class="form-control" ${isNew ? 'required' : ''}>
+                    <input type="password" id="password" name="password" class="form-control" maxlength="100" ${isNew ? 'required' : ''}>
                 </div>
 
                 <div class="form-group">

@@ -78,7 +78,7 @@
                                     <div class="btn-group">
                                         <a href="<c:url value='/user-management/edit/${u.id}'/>" class="btn btn-sm">Edit</a>
                                         <c:if test="${u.id != sessionScope.userId}">
-                                            <a href="<c:url value='/user-management/delete/${u.id}'/>" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?');">Hapus</a>
+                                            <a href="<c:url value='/user-management/delete/${u.id}'/>" class="btn btn-sm btn-danger btn-confirm-action" data-title="Hapus Pengguna" data-message="Hapus akun pengguna ini dari sistem?">Hapus</a>
                                         </c:if>
                                     </div>
                                 </td>
@@ -96,4 +96,5 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 </html>
