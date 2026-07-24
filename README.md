@@ -10,13 +10,13 @@ A Java web application for client onboarding, KYC management, portfolio tracking
 
 ## Features
 
-- **Client & KYC Management** — CRUD, single & bulk ZIP document upload with automatic DB cataloging, searchable listings
-- **Portfolio Management** — multi-instrument tracking (Saham, Reksadana, Obligasi, Deposito, Pasar Uang), live allocation %
-- **Reporting** — immutable report snapshots, PDF export (iText), admin-managed dynamic XML templates with secure parsing and automatic fallback
-- **Bank Sync Log** — partner transaction feed ingestion, expandable raw JSON payload viewer
-- **Analytics Dashboard** — live Chart.js visualizations (AUM trend, allocation, top clients, KYC status, doc types)
-- **Access Control** — role-based (Admin/Staff), PBKDF2 password hashing, session timeout, POST-only state-changing actions
-- **Audit Logging** — centralized, searchable activity log
+- **Client & KYC Management** : CRUD, single & bulk ZIP document upload with automatic DB cataloging, searchable listings
+- **Portfolio Management** : multi-instrument tracking (Saham, Reksadana, Obligasi, Deposito, Pasar Uang), live allocation %
+- **Reporting** : immutable report snapshots, PDF export (iText), admin-managed dynamic XML templates with secure parsing and automatic fallback
+- **Bank Sync Log** : partner transaction feed ingestion, expandable raw JSON payload viewer
+- **Analytics Dashboard** : live Chart.js visualizations (AUM trend, allocation, top clients, KYC status, doc types)
+- **Access Control** : role-based (Admin/Staff), PBKDF2 password hashing, session timeout, POST-only state-changing actions
+- **Audit Logging** : centralized, searchable activity log
 
 ## Tech Stack
 
@@ -30,7 +30,7 @@ Java 11 · Spring Framework 5.3.16 (MVC, JDBC) · JSP/JSTL · Apache Tomcat 9 ·
 - Ubuntu 24.04 LTS (manual deploy) or Docker + Docker Compose
 - JDK 11, Maven 3.8+, MariaDB 10.x
 
-### Method 1 — Manual Deployment on Ubuntu
+### Method 1 : Manual Deployment on Ubuntu
 
 **1. Install Maven**
 ```bash
@@ -115,7 +115,7 @@ VALUES ('<your_username>', '<hash_from_previous_step>', 'admin', 1);
 http://<your-server-ip>:8080/simipkit/login
 ```
 
-### Method 2 — Docker Compose
+### Method 2 : Docker Compose
 
 ```bash
 cp .env.example .env
