@@ -15,10 +15,25 @@ function tableSearch(input, tableId, colIndex) {
     if (!table) return;
     var rows = table.tBodies[0].rows;
     for (var i = 0; i < rows.length; i++) {
-        var cell = rows[i].cells[colIndex];
+        var row = rows[i];
+        if (row.classList.contains('json-expand-row')) {
+            var prevRow = row.previousElementSibling;
+            if (prevRow && prevRow.style.display === 'none') {
+                row.style.display = 'none';
+            }
+            continue;
+        }
+        var cell = row.cells[colIndex];
         if (cell) {
             var text = (cell.textContent || cell.innerText).toLowerCase();
-            rows[i].style.display = text.indexOf(query) > -1 ? '' : 'none';
+            var matches = text.indexOf(query) > -1;
+            row.style.display = matches ? '' : 'none';
+            if (!matches) {
+                var nextRow = row.nextElementSibling;
+                if (nextRow && nextRow.classList.contains('json-expand-row')) {
+                    nextRow.style.display = 'none';
+                }
+            }
         }
     }
 }

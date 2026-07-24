@@ -57,7 +57,7 @@
                     </thead>
                     <tbody>
                         <c:forEach var="e" items="${events}">
-                            <tr>
+                            <tr class="log-row">
                                 <td><c:out value="${e.id}"/></td>
                                 <td><strong><c:out value="${e.event_type}"/></strong></td>
                                 <td>
@@ -65,8 +65,26 @@
                                     ><c:out value="${e.status}"/></span>
                                 </td>
                                 <td><c:out value="${e.processed_at}"/></td>
-                                <td class="mono" style="max-width: 400px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                                    <c:out value="${e.payload_raw}"/>
+                                <td class="payload-cell">
+                                    <div class="payload-preview-wrapper">
+                                        <span class="payload-preview mono"><c:out value="${e.payload_raw}"/></span>
+                                        <button type="button" class="btn-json-toggle" onclick="toggleJsonRow(this)">
+                                            <span class="toggle-text">Lihat Lengkap</span>
+                                            <span class="toggle-icon">▼</span>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="json-expand-row" style="display: none;">
+                                <td colspan="5">
+                                    <div class="json-expand-container">
+                                        <div class="json-expand-header">
+                                            <span class="json-expand-title">Payload JSON Raw (Event ID: <c:out value="${e.id}"/>)</span>
+                                            <button type="button" class="btn-copy-json" onclick="copyJsonPayload(this)">Salin JSON</button>
+                                        </div>
+                                        <code class="json-raw-source" style="display: none;"><c:out value="${e.payload_raw}"/></code>
+                                        <pre class="json-pre-block"><code class="json-formatted mono"></code></pre>
+                                    </div>
                                 </td>
                             </tr>
                         </c:forEach>
@@ -82,5 +100,6 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/json-expand.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>

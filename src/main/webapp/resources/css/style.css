@@ -1,7 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 /* ===== COLOR PALETTE: OLD MONEY ===== */
 :root {
+    --font-mono:           'JetBrains Mono', Consolas, Monaco, monospace;
     --bg-body:             #faf7f0;
     --bg-card:             #fffef9;
     --bg-header:           #1c2a1e;
@@ -475,7 +476,8 @@ textarea.form-control {
 .mt-10  { margin-top: 10px; }
 .mt-20  { margin-top: 20px; }
 .mb-20  { margin-bottom: 20px; }
-.mono   { font-family: monospace; font-size: 12px; }
+.mono, code, pre, textarea.mono { font-family: var(--font-mono); }
+.mono   { font-size: 12px; }
 
 /* Modal Confirmation Styles */
 .modal-backdrop {
@@ -825,6 +827,125 @@ textarea.form-control {
         opacity: 0;
         transform: translateY(20px);
     }
+
+
+/* JSON Expand/Collapse Table Styling */
+.payload-cell {
+    position: relative;
+}
+
+.payload-preview-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    max-width: 450px;
+}
+
+.payload-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 320px;
+    display: inline-block;
+    color: var(--text-primary);
+}
+
+.btn-json-toggle {
+    background-color: var(--bg-body);
+    color: var(--primary);
+    border: 1px solid var(--border-main);
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.btn-json-toggle:hover {
+    background-color: var(--primary);
+    color: #ffffff;
+    border-color: var(--primary);
+}
+
+.btn-json-toggle .toggle-icon {
+    font-size: 9px;
+    transition: transform 0.2s ease;
+}
+
+.btn-json-toggle.expanded .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.json-expand-row {
+    background-color: #f7f4ec !important;
+}
+
+.json-expand-row > td {
+    padding: 12px 16px !important;
+    border-bottom: 1px solid var(--border-main) !important;
+}
+
+.json-expand-container {
+    background-color: #1e2820;
+    color: #e8e6df;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    padding: 12px 16px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.json-expand-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.json-expand-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: #a3c2a8;
+    letter-spacing: 0.3px;
+}
+
+.btn-copy-json {
+    background: rgba(255, 255, 255, 0.1);
+    color: #d4c9a8;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    font-size: 11px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.btn-copy-json:hover {
+    background: var(--primary-hover);
+    color: #ffffff;
+}
+
+.json-pre-block {
+    margin: 0;
+    padding: 0;
+    max-height: 350px;
+    overflow: auto;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.json-formatted {
+    color: #dcd6cd;
+    white-space: pre-wrap;
+    word-break: break-all;
 }
 
 

@@ -48,13 +48,13 @@ public class DocumentBulkController {
 
         try {
             // Panggil extractBulkUpload apa adanya tanpa sanitasi
-            documentBulkService.extractBulkUpload(zipFile, clientId);
+            int recordedCount = documentBulkService.extractBulkUpload(zipFile, clientId);
 
             Integer userId = (Integer) session.getAttribute("userId");
             auditLogService.logAction(userId, "BULK_DOCUMENT_UPLOAD", request.getRemoteAddr(),
-                    "Ekstraksi bulk dokumen ZIP untuk client ID: " + clientId + " (" + zipFile.getOriginalFilename() + ")");
+                    "Ekstraksi bulk dokumen ZIP untuk client ID: " + clientId + " (" + zipFile.getOriginalFilename() + ") - " + recordedCount + " file tercatat di DB");
 
-            model.addAttribute("success", "Bulk upload ZIP berhasil diekstraksi untuk client: " + clientId);
+            model.addAttribute("success", "Bulk upload ZIP berhasil diekstraksi untuk client: " + clientId + " (" + recordedCount + " file tercatat)");
             model.addAttribute("clients", clientService.getAllClients());
             return "document-bulk-upload";
 
