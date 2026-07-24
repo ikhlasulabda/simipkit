@@ -57,11 +57,12 @@
                 <table id="tbl-bank-sync-log">
                     <thead>
                         <tr>
-                            <th>ID Event</th>
-                            <th>Tipe Event</th>
-                            <th>Status</th>
-                            <th>Waktu Diproses</th>
+                            <th style="width: 75px;">ID Event</th>
+                            <th style="width: 105px;">Tipe Event</th>
+                            <th style="width: 115px;">Status</th>
+                            <th style="width: 160px;">Waktu Diproses</th>
                             <th>Payload JSON Raw</th>
+                            <th style="width: 130px;" class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,22 +80,22 @@
                                     </span>
                                 </td>
                                 <td><c:out value="${e.processed_at}"/></td>
-                                <td class="payload-cell">
-                                    <div class="payload-preview-wrapper">
-                                        <span class="payload-preview mono"><c:out value="${e.payload_raw}"/></span>
-                                        <button type="button" class="btn-json-toggle" onclick="toggleJsonRow(this)">
-                                            <span class="toggle-text">Lihat Lengkap</span>
-                                            <span class="toggle-icon">▼</span>
-                                        </button>
-                                    </div>
+                                <td class="col-payload-raw">
+                                    <div class="payload-preview mono"><c:out value="${e.payload_raw}"/></div>
+                                </td>
+                                <td class="col-actions text-center">
+                                    <button type="button" class="btn-json-toggle" onclick="toggleJsonRow(this)">
+                                        <span class="toggle-text">Lihat Lengkap</span>
+                                        <span class="toggle-icon">▼</span>
+                                    </button>
                                 </td>
                             </tr>
                             <tr class="json-expand-row" style="display: none;">
-                                <td colspan="5">
+                                <td colspan="6">
                                     <div class="json-expand-container">
                                         <div class="json-expand-header">
-                                            <span class="json-expand-title">Payload JSON Raw (Event ID: <c:out value="${e.id}"/>)</span>
-                                            <button type="button" class="btn-copy-json" onclick="copyJsonPayload(this)"><span>📋</span> Salin JSON</button>
+                                            <span class="json-expand-title">CONSOLE OUTPUT // PAYLOAD JSON RAW (EVENT ID: <c:out value="${e.id}"/>)</span>
+                                            <button type="button" class="btn-copy-json" onclick="copyJsonPayload(this)">Salin JSON</button>
                                         </div>
                                         <code class="json-raw-source" style="display: none;"><c:out value="${e.payload_raw}"/></code>
                                         <pre class="json-pre-block"><code class="json-formatted mono"></code></pre>
@@ -104,7 +105,7 @@
                         </c:forEach>
                         <c:if test="${empty events}">
                             <tr>
-                                <td colspan="5" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
+                                <td colspan="6" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
                             </tr>
                         </c:if>
                     </tbody>

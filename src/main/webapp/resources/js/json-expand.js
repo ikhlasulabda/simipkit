@@ -78,13 +78,13 @@ function fallbackCopyText(text, btn) {
 }
 
 function showCopyFeedback(btn) {
-    var originalHtml = btn.innerHTML;
-    btn.innerHTML = '✓ Tersalin!';
-    btn.style.backgroundColor = 'var(--status-green)';
-    btn.style.color = '#ffffff';
-    btn.style.borderColor = 'var(--status-green)';
+    var originalText = btn.textContent;
+    btn.textContent = 'Tersalin!';
+    btn.style.backgroundColor = 'var(--terminal-accent)';
+    btn.style.color = '#000000';
+    btn.style.borderColor = 'var(--terminal-accent)';
     setTimeout(function() {
-        btn.innerHTML = originalHtml;
+        btn.textContent = originalText;
         btn.style.backgroundColor = '';
         btn.style.color = '';
         btn.style.borderColor = '';

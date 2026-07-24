@@ -29,6 +29,10 @@
     --status-green:        #2d6a4f;
     --status-red:          #7c2020;
     --status-amber:        #8a6420;
+    --terminal-bg:         #0d0d0d;
+    --terminal-text:       #ffd60a;
+    --terminal-border:     #333333;
+    --terminal-accent:     #f5d90a;
 }
 
 * {
@@ -830,6 +834,11 @@ textarea.form-control {
 
 
 /* JSON Expand/Collapse Table Styling & Badges */
+#tbl-bank-sync-log {
+    table-layout: fixed;
+    width: 100%;
+}
+
 .badge {
     display: inline-flex;
     align-items: center;
@@ -878,26 +887,17 @@ textarea.form-control {
     border: 1px solid rgba(138, 100, 32, 0.25);
 }
 
-.payload-cell {
-    position: relative;
-    max-width: 420px;
-    white-space: nowrap !important;
-}
-
-.payload-preview-wrapper {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    max-width: 450px;
+td.col-payload-raw {
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .payload-preview {
-    display: block;
+    display: block !important;
+    width: 100% !important;
     white-space: nowrap !important;
     overflow: hidden !important;
     text-overflow: ellipsis !important;
-    max-width: 320px;
     font-family: var(--font-mono) !important;
     color: var(--text-primary);
 }
@@ -944,12 +944,14 @@ textarea.form-control {
 }
 
 .json-expand-container {
-    background-color: var(--bg-header);
-    color: var(--table-header-text);
-    border: 1px solid var(--primary-hover);
-    border-radius: 6px;
+    background-color: var(--terminal-bg);
+    color: var(--terminal-text);
+    border-left: 3px solid var(--terminal-accent);
+    border-top: 1px solid var(--terminal-border);
+    border-right: 1px solid var(--terminal-border);
+    border-bottom: 1px solid var(--terminal-border);
+    border-radius: 4px;
     padding: 14px 18px;
-    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .json-expand-header {
@@ -957,36 +959,34 @@ textarea.form-control {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--terminal-border);
 }
 
 .json-expand-title {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
-    color: #a3c2a8;
-    letter-spacing: 0.3px;
+    color: #888888;
+    letter-spacing: 0.05em;
+    font-family: var(--font-mono) !important;
 }
 
 .btn-copy-json {
-    background: rgba(255, 255, 255, 0.12);
-    color: #d4c9a8;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+    color: var(--terminal-text);
+    border: 1px solid var(--terminal-accent);
     padding: 3px 10px;
     font-size: 11px;
-    font-weight: 500;
-    border-radius: 4px;
+    font-weight: 600;
+    border-radius: 3px;
     cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    transition: all 0.2s ease;
+    font-family: var(--font-mono) !important;
+    transition: background-color 0.15s, color 0.15s;
 }
 
 .btn-copy-json:hover {
-    background: var(--primary-hover);
-    color: #ffffff;
-    border-color: rgba(255, 255, 255, 0.4);
+    background: var(--terminal-accent);
+    color: #000000;
 }
 
 .json-pre-block {
@@ -995,14 +995,16 @@ textarea.form-control {
     max-height: 350px;
     overflow: auto;
     font-size: 12px;
-    line-height: 1.45;
+    line-height: 1.5;
 }
 
 .json-formatted {
-    color: #dcd6cd;
+    color: var(--terminal-text) !important;
     white-space: pre-wrap !important;
     word-break: break-all !important;
     font-family: var(--font-mono) !important;
+    font-size: 12px;
+    line-height: 1.5;
 }
 
 
