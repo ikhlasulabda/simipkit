@@ -476,7 +476,7 @@ textarea.form-control {
 .mt-10  { margin-top: 10px; }
 .mt-20  { margin-top: 20px; }
 .mb-20  { margin-bottom: 20px; }
-.mono, code, pre, textarea.mono { font-family: var(--font-mono); }
+.mono, code, pre, textarea.mono, .payload-preview, .json-formatted { font-family: var(--font-mono) !important; }
 .mono   { font-size: 12px; }
 
 /* Modal Confirmation Styles */
@@ -829,41 +829,92 @@ textarea.form-control {
     }
 
 
-/* JSON Expand/Collapse Table Styling */
+/* JSON Expand/Collapse Table Styling & Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    font-family: var(--font-mono) !important;
+}
+
+.badge-event-sue {
+    background-color: rgba(45, 106, 79, 0.12);
+    color: #1c4e37;
+    border: 1px solid rgba(45, 106, 79, 0.3);
+}
+
+.badge-event-se {
+    background-color: rgba(3, 105, 161, 0.12);
+    color: #075985;
+    border: 1px solid rgba(3, 105, 161, 0.3);
+}
+
+.badge-event-tce {
+    background-color: rgba(138, 100, 32, 0.12);
+    color: #6e4e16;
+    border: 1px solid rgba(138, 100, 32, 0.3);
+}
+
+.badge-event-default {
+    background-color: rgba(74, 85, 104, 0.12);
+    color: #374151;
+    border: 1px solid rgba(74, 85, 104, 0.3);
+}
+
+.badge-status-processed {
+    background-color: #e8f4ed;
+    color: var(--status-green);
+    border: 1px solid rgba(45, 106, 79, 0.25);
+}
+
+.badge-status-received {
+    background-color: #fef4e5;
+    color: var(--status-amber);
+    border: 1px solid rgba(138, 100, 32, 0.25);
+}
+
 .payload-cell {
     position: relative;
+    max-width: 420px;
+    white-space: nowrap !important;
 }
 
 .payload-preview-wrapper {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
+    gap: 12px;
     max-width: 450px;
 }
 
 .payload-preview {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: block;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
     max-width: 320px;
-    display: inline-block;
+    font-family: var(--font-mono) !important;
     color: var(--text-primary);
 }
 
 .btn-json-toggle {
-    background-color: var(--bg-body);
+    background-color: var(--bg-card);
     color: var(--primary);
     border: 1px solid var(--border-main);
-    padding: 3px 8px;
+    padding: 4px 10px;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
-    border-radius: 3px;
+    border-radius: 4px;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
-    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+    gap: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     white-space: nowrap;
     flex-shrink: 0;
 }
@@ -876,7 +927,7 @@ textarea.form-control {
 
 .btn-json-toggle .toggle-icon {
     font-size: 9px;
-    transition: transform 0.2s ease;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-json-toggle.expanded .toggle-icon {
@@ -893,12 +944,12 @@ textarea.form-control {
 }
 
 .json-expand-container {
-    background-color: #1e2820;
-    color: #e8e6df;
-    border: 1px solid var(--primary);
-    border-radius: 4px;
-    padding: 12px 16px;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    background-color: var(--bg-header);
+    color: var(--table-header-text);
+    border: 1px solid var(--primary-hover);
+    border-radius: 6px;
+    padding: 14px 18px;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35);
 }
 
 .json-expand-header {
@@ -918,19 +969,24 @@ textarea.form-control {
 }
 
 .btn-copy-json {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.12);
     color: #d4c9a8;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 2px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 3px 10px;
     font-size: 11px;
-    border-radius: 3px;
+    font-weight: 500;
+    border-radius: 4px;
     cursor: pointer;
-    transition: background 0.15s, color 0.15s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.2s ease;
 }
 
 .btn-copy-json:hover {
     background: var(--primary-hover);
     color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.4);
 }
 
 .json-pre-block {
@@ -944,8 +1000,9 @@ textarea.form-control {
 
 .json-formatted {
     color: #dcd6cd;
-    white-space: pre-wrap;
-    word-break: break-all;
+    white-space: pre-wrap !important;
+    word-break: break-all !important;
+    font-family: var(--font-mono) !important;
 }
 
 
