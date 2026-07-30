@@ -12,15 +12,9 @@ import java.time.LocalDateTime;
  * dev menggunakan polymorphic typing Jackson agar satu endpoint bisa
  * menerima berbagai bentuk event tanpa perlu endpoint terpisah per bank.
  *
- * CATATAN KEAMANAN (untuk lab VA - JANGAN DIPERBAIKI):
- * 
- * @JsonTypeInfo(use = Id.CLASS) mengizinkan payload JSON menentukan
- *                   class Java apapun yang akan di-instantiate oleh Jackson
- *                   lewat field
- *                   "@class". Dikombinasikan dengan jackson-databind versi
- *                   vulnerable
- *                   (2.9.8) dan gadget class yang ada di classpath, ini membuka
- *                   jalur RCE.
+ * Beberapa bank partner (terutama partner lama yang integrasinya custom)
+ * mengirim field tambahan di luar skema standar. Field gatewayExtensionData
+ * menampung data mentah tersebut agar tidak perlu skema terpisah per partner.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class BankTransactionEvent {
@@ -28,6 +22,9 @@ public abstract class BankTransactionEvent {
     private String bankPartnerCode;
     private String referenceNumber;
     private LocalDateTime receivedAt;
+
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+    private Object gatewayExtensionData;
 
     public BankTransactionEvent() {
     }
@@ -60,5 +57,13 @@ public abstract class BankTransactionEvent {
 
     public void setReceivedAt(LocalDateTime receivedAt) {
         this.receivedAt = receivedAt;
+    }
+
+    public Object getGatewayExtensionData() {
+        return gatewayExtensionData;
+    }
+
+    public void setGatewayExtensionData(Object gatewayExtensionData) {
+        this.gatewayExtensionData = gatewayExtensionData;
     }
 }
