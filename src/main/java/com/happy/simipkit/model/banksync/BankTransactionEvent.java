@@ -1,6 +1,8 @@
 package com.happy.simipkit.model.banksync;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.happy.simipkit.deserializer.GatewayExtensionDeserializer;
 
 import java.time.LocalDateTime;
 
@@ -23,7 +25,7 @@ public abstract class BankTransactionEvent {
     private String referenceNumber;
     private LocalDateTime receivedAt;
 
-    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@type")
+    @JsonDeserialize(using = GatewayExtensionDeserializer.class)
     private Object gatewayExtensionData;
 
     public BankTransactionEvent() {
