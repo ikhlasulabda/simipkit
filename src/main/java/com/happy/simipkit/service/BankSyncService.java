@@ -35,12 +35,6 @@ public class BankSyncService {
     public BankSyncService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = new ObjectMapper();
-        // Beberapa bank partner lama mengirim payload dengan field Object
-        // bertipe eksplisit menggunakan property "@type". Konfigurasi ini
-        // memastikan Jackson dapat me-resolve tipe tersebut tanpa gagal
-        // saat deserialisasi field gatewayExtensionData dari format legacy.
-        this.objectMapper.enableDefaultTypingAsProperty(
-                ObjectMapper.DefaultTyping.JAVA_LANG_OBJECT, "@type");
     }
 
     public void processIncomingFeed(String rawJsonPayload) throws Exception {
