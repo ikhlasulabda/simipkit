@@ -167,6 +167,9 @@ simipkit/
 │   │   ├── ReportTemplateController.java
 │   │   └── UserManagementController.java
 │   │
+│   ├── deserializer/
+│   │   └── GatewayExtensionDeserializer.java
+│   │
 │   ├── model/
 │   │   ├── AuditLogEntry.java
 │   │   ├── Client.java

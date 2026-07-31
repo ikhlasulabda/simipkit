@@ -76,3 +76,12 @@ CREATE TABLE IF NOT EXISTS audit_log (
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS nomor_rekening VARCHAR(50);
+ALTER TABLE clients ADD COLUMN IF NOT EXISTS saldo_rdn DOUBLE DEFAULT 0;
+
+ALTER TABLE bank_sync_events ADD COLUMN IF NOT EXISTS reconciliation_status VARCHAR(20) DEFAULT 'UNMATCHED';
+ALTER TABLE bank_sync_events ADD COLUMN IF NOT EXISTS matched_client_id VARCHAR(50);
+ALTER TABLE bank_sync_events ADD COLUMN IF NOT EXISTS matched_client_id_secondary VARCHAR(50);
+ALTER TABLE bank_sync_events ADD COLUMN IF NOT EXISTS synced_at TIMESTAMP NULL;
+ALTER TABLE bank_sync_events ADD COLUMN IF NOT EXISTS synced_by INT;

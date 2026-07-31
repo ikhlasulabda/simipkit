@@ -43,9 +43,9 @@
         <div class="card">
             <div class="card-title">Event Transaksi Diterima</div>
             <div class="table-search-bar" style="display: flex; justify-content: space-between; align-items: center; gap: 12px;">
-                <input type="text" id="search-bank-sync" class="table-search-input"
-                       placeholder="Cari tipe event..."
-                       oninput="tableSearch(this, 'tbl-bank-sync-log', 1)">
+                <input type="text" id="search-bank-sync" class="table-search-input" style="max-width: 500px;"
+                       placeholder="Cari di raw JSON... (nomor rekening, referenceNumber, kode instrumen, dsb)"
+                       oninput="searchBankSyncPayload(this)">
                 <c:if test="${sessionScope.role == 'admin'}">
                     <a href="<c:url value='/bank-sync-log/delete-all'/>"
                        class="btn btn-sm btn-danger btn-confirm-action"
@@ -53,22 +53,32 @@
                        data-message="Hapus SELURUH log Bank Sync? Riwayat integrasi bank yang dihapus tidak bisa dipulihkan.">Hapus Semua Log</a>
                 </c:if>
             </div>
-            <div class="table-scroll-container">
+            <div class="table-scroll-container table-scroll-bank-sync">
                 <table id="tbl-bank-sync-log">
+                    <colgroup>
+                        <col style="width: 65px;">
+                        <col style="width: 90px;">
+                        <col style="width: 100px;">
+                        <col style="width: 160px;">
+                        <col style="width: 140px;">
+                        <col>
+                        <col style="width: 110px;">
+                    </colgroup>
                     <thead>
                         <tr>
-                            <th style="width: 75px;">ID Event</th>
-                            <th style="width: 105px;">Tipe Event</th>
-                            <th style="width: 115px;">Status</th>
-                            <th style="width: 160px;">Waktu Diproses</th>
+                            <th>ID Event</th>
+                            <th>Tipe Event</th>
+                            <th>Status</th>
+                            <th>Rekonsiliasi</th>
+                            <th>Waktu Diproses</th>
                             <th>Payload JSON Raw</th>
-                            <th style="width: 130px;" class="text-center">Aksi</th>
+                            <th class="text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
                         <c:forEach var="e" items="${events}">
-                            <tr class="log-row">
-                                <td><c:out value="${e.id}"/></td>
+                            <tr class="log-row" data-event-id="<c:out value='${e.id}'/>">
+                                <td class="mono"><c:out value="${e.id}"/></td>
                                 <td>
                                     <span class="badge ${e.event_badge_class}" title="<c:out value='${e.event_full_title}'/>">
                                         <c:out value="${e.event_badge}"/>
@@ -79,33 +89,37 @@
                                         <c:out value="${e.status}"/>
                                     </span>
                                 </td>
-                                <td><c:out value="${e.processed_at}"/></td>
-                                <td class="col-payload-raw">
+                                <td class="col-recon-cell">
+                                    <c:choose>
+                                        <c:when test="${e.reconciliation_status == 'SYNCED'}">
+                                            <span class="badge badge-recon-synced" title="Tersinkronisasi pada <c:out value='${e.synced_at}'/>">Tersinkronisasi</span>
+                                        </c:when>
+                                        <c:when test="${e.reconciliation_status == 'MATCHED'}">
+                                            <button type="button" class="btn badge badge-recon-matched" onclick="openMatchModal(${e.id})">Sync ke DB</button>
+                                        </c:when>
+                                        <c:when test="${e.reconciliation_status == 'FAILED'}">
+                                            <span class="badge badge-recon-failed" onclick="openMatchModal(${e.id})" title="Klik untuk coba lagi">Gagal (Coba lagi)</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <button type="button" class="btn badge badge-recon-unmatched" onclick="openMatchModal(${e.id})">Cocokkan Rekening</button>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="mono" style="font-size: 11px;"><c:out value="${e.processed_at}"/></td>
+                                <td class="col-payload-raw" title="<c:out value='${e.payload_raw}'/>">
                                     <div class="payload-preview mono"><c:out value="${e.payload_raw}"/></div>
+                                    <code class="json-raw-source" style="display: none;"><c:out value="${e.payload_raw}"/></code>
                                 </td>
                                 <td class="col-actions text-center">
-                                    <button type="button" class="btn-json-toggle" onclick="toggleJsonRow(this)">
-                                        <span class="toggle-text">Lihat Lengkap</span>
-                                        <span class="toggle-icon">▼</span>
+                                    <button type="button" class="btn-action-compact" onclick="openJsonModal(this, ${e.id})">
+                                        <span>Lihat JSON</span>
                                     </button>
-                                </td>
-                            </tr>
-                            <tr class="json-expand-row" style="display: none;">
-                                <td colspan="6">
-                                    <div class="json-expand-container">
-                                        <div class="json-expand-header">
-                                            <span class="json-expand-title">CONSOLE OUTPUT // PAYLOAD JSON RAW (EVENT ID: <c:out value="${e.id}"/>)</span>
-                                            <button type="button" class="btn-copy-json" onclick="copyJsonPayload(this)">Salin JSON</button>
-                                        </div>
-                                        <code class="json-raw-source" style="display: none;"><c:out value="${e.payload_raw}"/></code>
-                                        <pre class="json-pre-block"><code class="json-formatted mono"></code></pre>
-                                    </div>
                                 </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty events}">
                             <tr>
-                                <td colspan="6" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
+                                <td colspan="7" class="text-center">Belum ada log sinkronisasi bank terikat.</td>
                             </tr>
                         </c:if>
                     </tbody>
@@ -117,5 +131,6 @@
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
 <script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/json-expand.js'/>"></script>
+<script src="<c:url value='/resources/js/bank-sync-reconciliation.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>

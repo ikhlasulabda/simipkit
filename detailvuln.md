@@ -326,18 +326,19 @@ For a reverse shell variant, replace the `<command>` element:
 | File | Role |
 |---|---|
 | `pom.xml` (line 26) | Declares the vulnerable dependency: `<jackson.version>2.9.8</jackson.version>` |
-| `src/main/java/com/happy/simipkit/model/banksync/BankTransactionEvent.java` (line 25) | Annotated with `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")` enabling polymorphic deserialization |
+| `src/main/java/com/happy/simipkit/model/banksync/BankTransactionEvent.java` (line 21) | Annotated with `@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")` enabling polymorphic deserialization, and `@JsonDeserialize(using = GatewayExtensionDeserializer.class)` on `gatewayExtensionData` |
+| `src/main/java/com/happy/simipkit/deserializer/GatewayExtensionDeserializer.java` (lines 31-34) | Custom Jackson deserializer resolving dynamic types via `Class.forName(typeName)` using the `@type` JSON property |
 | `src/main/java/com/happy/simipkit/service/BankSyncService.java` (lines 37, 49) | Instantiates `ObjectMapper` without `PolymorphicTypeValidator`; calls `readValue()` targeting the polymorphic base type |
 | `src/main/java/com/happy/simipkit/controller/BankSyncController.java` (line 30) | HTTP entry point accepting raw JSON body and forwarding to the vulnerable service |
 
 ### 3.4 Root Cause Analysis
 
-This vulnerability is the result of three compounding factors:
+This vulnerability is the result of compounding factors:
 
-1. **Unrestricted polymorphic type annotation on the model class**: In `BankTransactionEvent.java` (line 25), the abstract base class is annotated to accept arbitrary class names from JSON input:
+1. **Unrestricted polymorphic type annotation on the model class**: In `BankTransactionEvent.java` (line 21), the abstract base class is annotated to accept arbitrary class names from JSON input:
 
     ```java
-    // BankTransactionEvent.java (line 25)
+    // BankTransactionEvent.java (line 21)
     @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
     public abstract class BankTransactionEvent {
         // ...
@@ -346,7 +347,15 @@ This vulnerability is the result of three compounding factors:
 
     This annotation instructs Jackson to read the `@class` field from the incoming JSON payload and instantiate whatever fully qualified Java class is specified, as long as it can be resolved from the classpath.
 
-2. **Unprotected ObjectMapper instantiation**: In `BankSyncService.java` (line 37), the `ObjectMapper` is created with default settings, without a `PolymorphicTypeValidator`:
+2. **Dynamic reflection lookup in custom deserializer**: In `GatewayExtensionDeserializer.java` (line 31-34), the custom deserializer attached to `gatewayExtensionData` extracts the `@type` field and dynamically invokes `Class.forName(typeName)` to instantiate target classes:
+
+    ```java
+    // GatewayExtensionDeserializer.java (line 31-34)
+    String typeName = node.get("@type").asText();
+    Class<?> targetClass = Class.forName(typeName);
+    ```
+
+3. **Unprotected ObjectMapper instantiation**: In `BankSyncService.java` (line 37), the `ObjectMapper` is created with default settings, without a `PolymorphicTypeValidator`:
 
     ```java
     // BankSyncService.java (line 35-38)
@@ -356,7 +365,7 @@ This vulnerability is the result of three compounding factors:
     }
     ```
 
-3. **Direct deserialization of external input**: In `BankSyncService.java` (line 49), the raw JSON payload is deserialized directly into the polymorphic base type:
+4. **Direct deserialization of external input**: In `BankSyncService.java` (line 49), the raw JSON payload is deserialized directly into the polymorphic base type:
 
     ```java
     // BankSyncService.java (line 49)

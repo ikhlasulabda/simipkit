@@ -22,7 +22,7 @@ public class RoleAuthorizationFilter implements Filter {
             "/report-template-upload",
             "/reports/summary/delete",
             "/audit-log/delete-all",
-            "/bank-sync-log/delete-all");
+            "/bank-sync-log/");
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {

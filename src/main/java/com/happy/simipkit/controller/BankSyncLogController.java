@@ -1,15 +1,18 @@
 package com.happy.simipkit.controller;
 
 import com.happy.simipkit.service.AuditLogService;
+import com.happy.simipkit.service.BankSyncReconciliationService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,15 +22,19 @@ public class BankSyncLogController {
 
     private final JdbcTemplate jdbcTemplate;
     private final AuditLogService auditLogService;
+    private final BankSyncReconciliationService reconciliationService;
 
-    public BankSyncLogController(JdbcTemplate jdbcTemplate, AuditLogService auditLogService) {
+    public BankSyncLogController(JdbcTemplate jdbcTemplate,
+                                 AuditLogService auditLogService,
+                                 BankSyncReconciliationService reconciliationService) {
         this.jdbcTemplate = jdbcTemplate;
         this.auditLogService = auditLogService;
+        this.reconciliationService = reconciliationService;
     }
 
     @GetMapping
     public String showSyncLogs(Model model) {
-        String sql = "SELECT id, event_type, payload_raw, status, processed_at FROM bank_sync_events ORDER BY processed_at DESC LIMIT 100";
+        String sql = "SELECT id, event_type, payload_raw, status, reconciliation_status, matched_client_id, matched_client_id_secondary, synced_at, processed_at FROM bank_sync_events ORDER BY processed_at DESC LIMIT 100";
         List<Map<String, Object>> events = jdbcTemplate.queryForList(sql);
 
         for (Map<String, Object> event : events) {
@@ -70,6 +77,48 @@ public class BankSyncLogController {
 
         model.addAttribute("events", events);
         return "bank-sync-log";
+    }
+
+    @PostMapping("/{id}/match")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> matchEvent(@PathVariable("id") int id, HttpServletRequest request, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", "Sesi tidak valid / belum login.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+        }
+        try {
+            Map<String, Object> res = reconciliationService.matchEvent(id, userId, request.getRemoteAddr());
+            return ResponseEntity.ok(res);
+        } catch (Exception e) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        }
+    }
+
+    @PostMapping("/{id}/sync")
+    @ResponseBody
+    public ResponseEntity<Map<String, Object>> syncEvent(@PathVariable("id") int id, HttpServletRequest request, HttpSession session) {
+        Integer userId = (Integer) session.getAttribute("userId");
+        if (userId == null) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", "Sesi tidak valid / belum login.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(err);
+        }
+        try {
+            Map<String, Object> res = reconciliationService.syncEvent(id, userId, request.getRemoteAddr());
+            return ResponseEntity.ok(res);
+        } catch (IllegalStateException e) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(err);
+        } catch (Exception e) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err);
+        }
     }
 
     @PostMapping("/delete-all")

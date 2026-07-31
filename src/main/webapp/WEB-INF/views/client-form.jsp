@@ -68,6 +68,16 @@
                     </select>
                 </div>
 
+                <div class="form-group">
+                    <label for="nomorRekening">Nomor Rekening (RDN)</label>
+                    <input type="text" id="nomorRekening" name="nomorRekening" class="form-control mono" value="<c:out value='${client.nomorRekening}'/>" maxlength="50" placeholder="Contoh: 1234567890">
+                </div>
+
+                <div class="form-group">
+                    <label for="saldoRdn">Saldo RDN (IDR)</label>
+                    <input type="number" id="saldoRdn" name="saldoRdn" class="form-control mono" value="<c:out value='${client.saldoRdn}'/>" step="any" min="0" placeholder="0">
+                </div>
+
                 <div class="form-group mt-20">
                     <button type="submit" class="btn btn-primary">Simpan Data Klien</button>
                     <a href="<c:url value='/clients'/>" class="btn btn-secondary">Batal</a>

@@ -46,11 +46,12 @@
             <div class="card-title">Informasi Pribadi</div>
             <div class="grid-4" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 0;">
                 <div>
-                    <p><strong>ID Klien:</strong> <span class="mono"><c:out value="${client.id}"/></span></p>
+                    <p><strong>ID Klien:</strong> <span class="mono"><c:out value="${client.id}"/></span><c:if test="${not empty client.nomorRekening}"> <span style="color: var(--text-muted); font-size: 13px;">· RDN: <c:out value="${client.nomorRekening}"/></span></c:if></p>
                     <p><strong>Nama Lengkap:</strong> <c:out value="${client.nama}"/></p>
                     <p><strong>NIK:</strong> <span class="mono"><c:out value="${client.nik}"/></span></p>
                 </div>
                 <div>
+                    <p><strong>Nomor Rekening RDN:</strong> <span class="mono"><c:out value="${empty client.nomorRekening ? '-' : client.nomorRekening}"/></span></p>
                     <p><strong>Alamat:</strong> <c:out value="${client.alamat}"/></p>
                     <p><strong>Status KYC:</strong>
                         <span style="font-weight: 600; color: ${client.statusKyc == 'VERIFIED' ? 'var(--status-green)' : (client.statusKyc == 'REJECTED' ? 'var(--status-red)' : 'var(--status-amber)')};">
@@ -60,6 +61,11 @@
                     <p><strong>Tanggal Pendaftaran:</strong> <c:out value="${client.createdAt}"/></p>
                 </div>
             </div>
+        </div>
+
+        <div class="stat-card stat-card-compact mb-20" style="border: 1px solid var(--accent-muted-light);">
+            <div class="label">SALDO REKENING DANA NASABAH (RDN)</div>
+            <div class="value" style="color: var(--primary);"><fmt:formatNumber value="${client.saldoRdn}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/></div>
         </div>
 
         <div class="card mb-20">

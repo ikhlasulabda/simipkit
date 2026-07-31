@@ -24,13 +24,22 @@ public class ClientService {
     }
 
     public List<Client> getAllClients() {
-        String sql = "SELECT id, nama, nik, alamat, status_kyc, created_at FROM clients ORDER BY created_at DESC";
+        String sql = "SELECT id, nama, nik, alamat, status_kyc, nomor_rekening, saldo_rdn, created_at FROM clients ORDER BY created_at DESC";
         return jdbcTemplate.query(sql, new ClientRowMapper());
     }
 
     public Client getClientById(String id) {
-        String sql = "SELECT id, nama, nik, alamat, status_kyc, created_at FROM clients WHERE id = ?";
+        String sql = "SELECT id, nama, nik, alamat, status_kyc, nomor_rekening, saldo_rdn, created_at FROM clients WHERE id = ?";
         List<Client> list = jdbcTemplate.query(sql, new ClientRowMapper(), id);
+        return list.isEmpty() ? null : list.get(0);
+    }
+
+    public Client getClientByNomorRekening(String nomorRekening) {
+        if (nomorRekening == null || nomorRekening.trim().isEmpty()) {
+            return null;
+        }
+        String sql = "SELECT id, nama, nik, alamat, status_kyc, nomor_rekening, saldo_rdn, created_at FROM clients WHERE nomor_rekening = ?";
+        List<Client> list = jdbcTemplate.query(sql, new ClientRowMapper(), nomorRekening.trim());
         return list.isEmpty() ? null : list.get(0);
     }
 
@@ -43,15 +52,15 @@ public class ClientService {
         }
         sanitizeAndValidateClient(client);
         logger.info("Membuat data klien baru: {}, NIK: {}", client.getNama(), client.getNik());
-        String sql = "INSERT INTO clients (id, nama, nik, alamat, status_kyc) VALUES (?, ?, ?, ?, ?)";
-        jdbcTemplate.update(sql, client.getId(), client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc());
+        String sql = "INSERT INTO clients (id, nama, nik, alamat, status_kyc, nomor_rekening, saldo_rdn) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, client.getId(), client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc(), client.getNomorRekening(), client.getSaldoRdn());
     }
 
     public void updateClient(Client client) {
         logger.info("Memperbarui data klien id: {}", client.getId());
         sanitizeAndValidateClient(client);
-        String sql = "UPDATE clients SET nama = ?, nik = ?, alamat = ?, status_kyc = ? WHERE id = ?";
-        jdbcTemplate.update(sql, client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc(), client.getId());
+        String sql = "UPDATE clients SET nama = ?, nik = ?, alamat = ?, status_kyc = ?, nomor_rekening = ?, saldo_rdn = ? WHERE id = ?";
+        jdbcTemplate.update(sql, client.getNama(), client.getNik(), client.getAlamat(), client.getStatusKyc(), client.getNomorRekening(), client.getSaldoRdn(), client.getId());
     }
 
     private void sanitizeAndValidateClient(Client client) {
@@ -63,6 +72,9 @@ public class ClientService {
         }
         if (client.getAlamat() != null && client.getAlamat().length() > 250) {
             client.setAlamat(client.getAlamat().substring(0, 250));
+        }
+        if (client.getNomorRekening() != null && client.getNomorRekening().length() > 50) {
+            client.setNomorRekening(client.getNomorRekening().substring(0, 50));
         }
     }
 
@@ -108,6 +120,8 @@ public class ClientService {
             c.setNik(rs.getString("nik"));
             c.setAlamat(rs.getString("alamat"));
             c.setStatusKyc(rs.getString("status_kyc"));
+            c.setNomorRekening(rs.getString("nomor_rekening"));
+            c.setSaldoRdn(rs.getDouble("saldo_rdn"));
             if (rs.getTimestamp("created_at") != null) {
                 c.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
             }

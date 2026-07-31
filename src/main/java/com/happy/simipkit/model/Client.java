@@ -9,6 +9,8 @@ public class Client {
     private String nik;
     private String alamat;
     private String statusKyc; // "PENDING", "VERIFIED", "REJECTED"
+    private String nomorRekening;
+    private double saldoRdn;
     private LocalDateTime createdAt;
 
     public Client() {
@@ -20,6 +22,17 @@ public class Client {
         this.nik = nik;
         this.alamat = alamat;
         this.statusKyc = statusKyc;
+        this.createdAt = createdAt;
+    }
+
+    public Client(String id, String nama, String nik, String alamat, String statusKyc, String nomorRekening, double saldoRdn, LocalDateTime createdAt) {
+        this.id = id;
+        this.nama = nama;
+        this.nik = nik;
+        this.alamat = alamat;
+        this.statusKyc = statusKyc;
+        this.nomorRekening = nomorRekening;
+        this.saldoRdn = saldoRdn;
         this.createdAt = createdAt;
     }
 
@@ -61,6 +74,22 @@ public class Client {
 
     public void setStatusKyc(String statusKyc) {
         this.statusKyc = statusKyc;
+    }
+
+    public String getNomorRekening() {
+        return nomorRekening;
+    }
+
+    public void setNomorRekening(String nomorRekening) {
+        this.nomorRekening = nomorRekening;
+    }
+
+    public double getSaldoRdn() {
+        return saldoRdn;
+    }
+
+    public void setSaldoRdn(double saldoRdn) {
+        this.saldoRdn = saldoRdn;
     }
 
     public LocalDateTime getCreatedAt() {

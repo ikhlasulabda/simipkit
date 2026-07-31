@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class SettlementEvent extends BankTransactionEvent {
 
+    private String nomorRekening;
     private String kodeInstrumen;
     private double jumlahUnit;
     private double hargaSettlement;
@@ -19,6 +20,24 @@ public class SettlementEvent extends BankTransactionEvent {
         this.jumlahUnit = jumlahUnit;
         this.hargaSettlement = hargaSettlement;
         this.tanggalSettlement = tanggalSettlement;
+    }
+
+    public SettlementEvent(String bankPartnerCode, String referenceNumber, LocalDateTime receivedAt,
+            String nomorRekening, String kodeInstrumen, double jumlahUnit, double hargaSettlement, String tanggalSettlement) {
+        super(bankPartnerCode, referenceNumber, receivedAt);
+        this.nomorRekening = nomorRekening;
+        this.kodeInstrumen = kodeInstrumen;
+        this.jumlahUnit = jumlahUnit;
+        this.hargaSettlement = hargaSettlement;
+        this.tanggalSettlement = tanggalSettlement;
+    }
+
+    public String getNomorRekening() {
+        return nomorRekening;
+    }
+
+    public void setNomorRekening(String nomorRekening) {
+        this.nomorRekening = nomorRekening;
     }
 
     public String getKodeInstrumen() {
