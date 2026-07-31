@@ -115,12 +115,22 @@ public class AppConfig implements WebMvcConfigurer {
      * tidak di-set atau kosong. Dipakai konsisten untuk semua config yang
      * perlu berbeda antara mode manual deploy vs Docker.
      */
-    private String getEnvOrDefault(String envKey, String defaultValue) {
+    public static String getEnvOrDefault(String envKey, String defaultValue) {
         String value = System.getenv(envKey);
         if (value == null || value.trim().isEmpty()) {
             logger.warn("Environment variable {} is not set. Falling back to default: '{}'", envKey, defaultValue);
             return defaultValue;
         }
         return value;
+    }
+
+    /**
+     * Mengambil base path direktori upload dokumen KYC dari environment variable UPLOAD_DIR,
+     * dengan fallback default "/opt/simipkit/uploads/documents/".
+     * Memastikan selalu memiliki trailing slash ("/").
+     */
+    public static String getUploadDir() {
+        String dir = getEnvOrDefault("UPLOAD_DIR", "/opt/simipkit/uploads/documents/");
+        return dir.endsWith("/") ? dir : dir + "/";
     }
 }

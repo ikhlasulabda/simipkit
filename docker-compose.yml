@@ -14,6 +14,9 @@ services:
       - DB_NAME=${DB_NAME:-simipkit}
       - DB_USER=${DB_USER:-simipkit_app}
       - DB_PASSWORD=${DB_PASSWORD:-simipkit_pass}
+      - UPLOAD_DIR=${UPLOAD_DIR:-/opt/simipkit/uploads/documents/}
+    volumes:
+      - app_uploads:${UPLOAD_DIR:-/opt/simipkit/uploads/documents/}
     depends_on:
       db:
         condition: service_healthy
@@ -38,3 +41,4 @@ services:
 
 volumes:
   mariadb_data:
+  app_uploads:

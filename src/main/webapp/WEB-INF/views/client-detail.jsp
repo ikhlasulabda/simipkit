@@ -42,6 +42,13 @@
             </div>
         </div>
 
+        <c:if test="${not empty error}">
+            <div class="alert alert-danger"><c:out value="${error}"/></div>
+        </c:if>
+        <c:if test="${not empty success}">
+            <div class="alert alert-success"><c:out value="${success}"/></div>
+        </c:if>
+
         <div class="card mb-20">
             <div class="card-title">Informasi Pribadi</div>
             <div class="grid-4" style="grid-template-columns: repeat(2, 1fr); margin-bottom: 0;">
@@ -90,6 +97,7 @@
                             <th>Nama File Stored</th>
                             <th>Ukuran File (Bytes)</th>
                             <th>Waktu Upload</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -101,11 +109,14 @@
                                 <td class="mono"><c:out value="${doc.namaFileStored}"/></td>
                                 <td><c:out value="${doc.fileSizeBytes}"/> B</td>
                                 <td><c:out value="${doc.uploadedAt}"/></td>
+                                <td>
+                                    <a href="<c:url value='/documents/delete/${doc.id}'/>" class="btn btn-sm btn-danger btn-confirm-action" data-title="Hapus Dokumen KYC" data-message="Hapus dokumen KYC ini dari sistem dan storage? Tindakan ini tidak dapat dibatalkan.">Hapus</a>
+                                </td>
                             </tr>
                         </c:forEach>
                         <c:if test="${empty documents}">
                             <tr>
-                                <td colspan="6" class="text-center">Belum ada dokumen KYC terlampir untuk klien ini.</td>
+                                <td colspan="7" class="text-center">Belum ada dokumen KYC terlampir untuk klien ini.</td>
                             </tr>
                         </c:if>
                     </tbody>
@@ -158,5 +169,6 @@
     </div>
 </body>
 <script src="<c:url value='/resources/js/table-search.js'/>"></script>
+<script src="<c:url value='/resources/js/confirm-modal.js'/>"></script>
 <script src="<c:url value='/resources/js/idle-timer.js'/>" data-logout-url="<c:url value='/logout?reason=timeout'/>"></script>
 </html>

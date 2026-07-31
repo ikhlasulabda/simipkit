@@ -75,6 +75,7 @@ DB_PORT=3306
 DB_NAME=simipkit
 DB_USER=simipkit_app
 DB_PASSWORD=<your_password>
+UPLOAD_DIR=/opt/simipkit/uploads/documents/
 ```
 ```bash
 sudo chown root:tomcat /etc/simipkit.env
@@ -132,6 +133,7 @@ Available at `http://localhost:8080`. No default user is seeded, create the firs
 | `DB_NAME` | Database name | `simipkit` |
 | `DB_USER` | Database application user | `simipkit_app` |
 | `DB_PASSWORD` | Database application password | *(none - must be set)* |
+| `UPLOAD_DIR` | KYC document upload base storage directory | `/opt/simipkit/uploads/documents/` |
 
 ---
 

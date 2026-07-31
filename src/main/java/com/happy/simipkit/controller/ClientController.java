@@ -78,8 +78,9 @@ public class ClientController {
     @PostMapping("/delete/{id}")
     public String deleteClient(@PathVariable("id") String id, HttpServletRequest request, HttpSession session) {
         Integer userId = (Integer) session.getAttribute("userId");
-        clientService.deleteClient(id);
-        auditLogService.logAction(userId, "CLIENT_DELETE", request.getRemoteAddr(), "Hapus client ID: " + id);
+        int docCount = clientService.deleteClient(id);
+        auditLogService.logAction(userId, "CLIENT_DELETE", request.getRemoteAddr(),
+                "Hapus client ID: " + id + " (Folder storage KYC dibersihkan: " + docCount + " dokumen)");
         return "redirect:/clients";
     }
 }

@@ -1,5 +1,6 @@
 package com.happy.simipkit.service;
 
+import com.happy.simipkit.config.AppConfig;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -31,7 +32,6 @@ import java.util.UUID;
 public class DocumentBulkService {
 
     private static final Logger logger = LogManager.getLogger(DocumentBulkService.class);
-    private static final String UPLOAD_BASE_DIR = "/opt/simipkit/uploads/documents/";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -40,12 +40,13 @@ public class DocumentBulkService {
     }
 
     public int extractBulkUpload(MultipartFile zipFile, String clientId) throws IOException {
-        String tempZipPath = UPLOAD_BASE_DIR + "temp_" + System.currentTimeMillis() + ".zip";
+        String uploadBaseDir = AppConfig.getUploadDir();
+        String tempZipPath = uploadBaseDir + "temp_" + System.currentTimeMillis() + ".zip";
         File tempZip = new File(tempZipPath);
         tempZip.getParentFile().mkdirs();
         zipFile.transferTo(tempZip);
 
-        String extractionTarget = UPLOAD_BASE_DIR + clientId + "/";
+        String extractionTarget = uploadBaseDir + clientId + "/";
         File targetDir = new File(extractionTarget);
         targetDir.mkdirs();
 

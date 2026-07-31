@@ -1,5 +1,6 @@
 package com.happy.simipkit.service;
 
+import com.happy.simipkit.config.AppConfig;
 import com.happy.simipkit.model.Client;
 import com.happy.simipkit.model.ClientDocument;
 import org.apache.logging.log4j.LogManager;
@@ -8,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -78,10 +80,26 @@ public class ClientService {
         }
     }
 
-    public void deleteClient(String id) {
+    public int deleteClient(String id) {
         logger.info("Menghapus klien id: {}", id);
+        List<ClientDocument> docs = getDocumentsByClientId(id);
+        int docCount = docs != null ? docs.size() : 0;
+
+        String uploadBaseDir = AppConfig.getUploadDir();
+        String clientDirPath = uploadBaseDir + id + "/";
+        File clientDir = new File(clientDirPath);
+        if (clientDir.exists()) {
+            try {
+                org.apache.commons.io.FileUtils.deleteDirectory(clientDir);
+                logger.info("Folder dokumen KYC untuk client {} berhasil dihapus dari storage disk", id);
+            } catch (Exception e) {
+                logger.warn("Gagal membersihkan folder dokumen KYC untuk client {}: {}", id, e.getMessage());
+            }
+        }
+
         String sql = "DELETE FROM clients WHERE id = ?";
         jdbcTemplate.update(sql, id);
+        return docCount;
     }
 
     // Document operations
