@@ -11,29 +11,28 @@
 
     // Project palette (from style.css :root variables)
     var PALETTE = [
-        '#3a6ea5', // --primary
-        '#7090b0', // --accent-muted
-        '#006600', // --status-green
-        '#006699', // --pdf
-        '#885500', // --status-amber
-        '#cc0000', // --status-red
-        '#708090'  // --secondary
+        '#2E4860', // --accent-dark
+        '#7CA7C7', // --accent-primary
+        '#CFE1EF', // --surface-soft
+        '#E8D3B7', // --surface-secondary
+        '#1e3245', // Darker Accent
+        '#5282a6'  // Slate Blue
     ];
 
     var KYC_COLORS = {
-        'VERIFIED': '#006600',
-        'PENDING':  '#885500',
-        'REJECTED': '#cc0000'
+        'VERIFIED': '#1f663b',
+        'PENDING':  '#875417',
+        'REJECTED': '#a82e2e'
     };
-    var KYC_FALLBACK = '#708090';
+    var KYC_FALLBACK = '#7CA7C7';
 
     // Font matching style.css body
-    var FONT_FAMILY = "'Tahoma', 'MS Sans Serif', 'Verdana', sans-serif";
+    var FONT_FAMILY = "'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif";
 
     // Set Chart.js global defaults
     Chart.defaults.font.family = FONT_FAMILY;
     Chart.defaults.font.size = 11;
-    Chart.defaults.color = '#555555'; // --text-muted
+    Chart.defaults.color = '#000000'; // High contrast text
 
     /**
      * Format number as Indonesian Rupiah string (no scientific notation).
@@ -81,8 +80,8 @@
     if (trendCtx && DATA.trendDates && DATA.trendDates.length > 0) {
         var ctx = trendCtx.getContext('2d');
         var gradient = ctx.createLinearGradient(0, 0, 0, 280);
-        gradient.addColorStop(0, 'rgba(58, 110, 165, 0.25)');
-        gradient.addColorStop(1, 'rgba(58, 110, 165, 0.02)');
+        gradient.addColorStop(0, 'rgba(46, 72, 96, 0.25)');
+        gradient.addColorStop(1, 'rgba(46, 72, 96, 0.02)');
 
         new Chart(trendCtx, {
             type: 'line',
@@ -91,11 +90,11 @@
                 datasets: [{
                     label: 'Total AUM Kumulatif',
                     data: DATA.trendValues,
-                    borderColor: '#3a6ea5',
+                    borderColor: '#2E4860',
                     backgroundColor: gradient,
                     borderWidth: 2,
-                    pointBackgroundColor: '#0055aa',
-                    pointBorderColor: '#0055aa',
+                    pointBackgroundColor: '#2E4860',
+                    pointBorderColor: '#2E4860',
                     pointRadius: 3,
                     pointHoverRadius: 5,
                     fill: true,
@@ -121,7 +120,7 @@
                         ticks: { maxTicksLimit: 8, font: { size: 11 } }
                     },
                     y: {
-                        grid: { color: 'rgba(176, 196, 222, 0.5)' },
+                        grid: { color: 'rgba(46, 72, 96, 0.15)' },
                         ticks: {
                             callback: function (value) {
                                 if (value >= 1000000000) return 'Rp ' + (value / 1000000000).toFixed(1) + ' M';
@@ -214,7 +213,7 @@
                 },
                 scales: {
                     x: {
-                        grid: { color: 'rgba(176, 196, 222, 0.5)' },
+                        grid: { color: 'rgba(46, 72, 96, 0.15)' },
                         ticks: {
                             callback: function (value) {
                                 if (value >= 1000000000) return 'Rp ' + (value / 1000000000).toFixed(1) + ' M';
@@ -276,7 +275,7 @@
                         ticks: { font: { size: 11 } }
                     },
                     y: {
-                        grid: { color: 'rgba(176, 196, 222, 0.5)' },
+                        grid: { color: 'rgba(46, 72, 96, 0.15)' },
                         ticks: {
                             stepSize: 1,
                             font: { size: 11 }
