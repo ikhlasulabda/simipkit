@@ -13,7 +13,7 @@ A Java web application for client onboarding, KYC management, portfolio tracking
 - **Client & KYC Management** : CRUD, single & bulk ZIP document upload with automatic DB cataloging, searchable listings
 - **Portfolio Management** : multi-instrument tracking (Saham, Reksadana, Obligasi, Deposito, Pasar Uang), live allocation %
 - **Reporting** : immutable report snapshots, PDF export (iText), admin-managed dynamic XML templates with secure parsing and automatic fallback
-- **Bank Sync Log** : partner transaction feed ingestion, expandable raw JSON payload viewer
+- **Bank Sync Log & Reconciliation** : partner transaction feed ingestion, event classification badges (SUE, SE, TCE), automated account matching by account number / RDN, transactional financial reconciliation (saldo RDN update, portfolio asset settlement with insufficient funds validation, transfer confirmation), expandable raw JSON payload viewer
 - **Analytics Dashboard** : live Chart.js visualizations (AUM trend, allocation, top clients, KYC status, doc types)
 - **Access Control** : role-based (Admin/Staff), PBKDF2 password hashing, session timeout, POST-only state-changing actions
 - **Audit Logging** : centralized, searchable activity log
@@ -131,7 +131,7 @@ Available at `http://localhost:8080`. No default user is seeded, create the firs
 | `DB_PORT` | Database port | `3306` |
 | `DB_NAME` | Database name | `simipkit` |
 | `DB_USER` | Database application user | `simipkit_app` |
-| `DB_PASSWORD` | Database application password | *(none — must be set)* |
+| `DB_PASSWORD` | Database application password | *(none - must be set)* |
 
 ---
 
@@ -170,6 +170,9 @@ simipkit/
 │   ├── deserializer/
 │   │   └── GatewayExtensionDeserializer.java
 │   │
+│   ├── exception/
+│   │   └── InsufficientFundsException.java
+│   │
 │   ├── model/
 │   │   ├── AuditLogEntry.java
 │   │   ├── Client.java
@@ -192,6 +195,7 @@ simipkit/
 │   │
 │   ├── service/
 │   │   ├── AuditLogService.java
+│   │   ├── BankSyncReconciliationService.java
 │   │   ├── BankSyncService.java
 │   │   ├── ClientService.java
 │   │   ├── DocumentBulkService.java
@@ -233,6 +237,7 @@ simipkit/
         ├── css/
         │   └── style.css
         └── js/
+            ├── bank-sync-reconciliation.js
             ├── confirm-modal.js
             ├── dashboard-charts.js
             ├── idle-timer.js
