@@ -2,14 +2,15 @@ package com.happy.simipkit.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.happy.simipkit.exception.InsufficientFundsException;
 import com.happy.simipkit.model.Client;
 import com.happy.simipkit.model.PortfolioAsset;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
@@ -116,14 +117,28 @@ public class BankSyncReconciliationService {
             String kode = rootNode.has("kodeInstrumen") ? rootNode.get("kodeInstrumen").asText() : "-";
             double unit = rootNode.has("jumlahUnit") ? rootNode.get("jumlahUnit").asDouble() : 0;
             double harga = rootNode.has("hargaSettlement") ? rootNode.get("hargaSettlement").asDouble() : 0;
-            result.put("previewMessage", "Akan menambahkan / meng-update " + unit + " unit " + kode + " (harga acuan: Rp " + harga + ") ke portofolio");
+            double totalBiaya = unit * harga;
+
+            result.put("kodeInstrumen", kode);
+            result.put("jumlahUnit", unit);
+            result.put("hargaSettlement", harga);
+            result.put("totalBiayaSettlement", totalBiaya);
+
             if (clientPrimary != null) {
+                double saldoRdn = clientPrimary.getSaldoRdn();
+                result.put("saldoRdnSaatIni", saldoRdn);
+                result.put("isSaldoCukup", saldoRdn >= totalBiaya);
+                result.put("previewMessage", "Akan menambahkan " + unit + " unit " + kode +
+                        " ke portofolio & memotong saldo RDN sebesar Rp " + totalBiaya);
+
                 List<PortfolioAsset> assets = portfolioService.getAssetsByClientId(clientPrimary.getId());
                 PortfolioAsset existing = assets.stream().filter(a -> kode.equalsIgnoreCase(a.getNamaInstrumen())).findFirst().orElse(null);
                 if (existing != null) {
                     result.put("existingAssetJumlah", existing.getJumlah());
                     result.put("existingAssetNilai", existing.getNilai());
                 }
+            } else {
+                result.put("previewMessage", "Akan menambahkan / meng-update " + unit + " unit " + kode + " (total biaya Rp " + totalBiaya + ") ke portofolio");
             }
         } else if (eventClass.contains("TransferConfirmationEvent")) {
             double jumlah = rootNode.has("jumlahTransfer") ? rootNode.get("jumlahTransfer").asDouble() : 0;
@@ -138,6 +153,7 @@ public class BankSyncReconciliationService {
     /**
      * Eksekusi sinkronisasi finansial / portofolio untuk event yang berstatus MATCHED.
      */
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> syncEvent(int eventId, Integer userId, String ipAddress) throws Exception {
         String selectSql = "SELECT id, payload_raw, reconciliation_status, matched_client_id, matched_client_id_secondary FROM bank_sync_events WHERE id = ?";
         List<Map<String, Object>> rows = jdbcTemplate.queryForList(selectSql, eventId);
@@ -202,7 +218,29 @@ public class BankSyncReconciliationService {
             String kodeInstrumen = rootNode.has("kodeInstrumen") ? rootNode.get("kodeInstrumen").asText() : "UNKNOWN";
             double jumlahUnit = rootNode.has("jumlahUnit") ? rootNode.get("jumlahUnit").asDouble() : 0.0;
             double hargaSettlement = rootNode.has("hargaSettlement") ? rootNode.get("hargaSettlement").asDouble() : 0.0;
+            double totalBiaya = jumlahUnit * hargaSettlement;
 
+            Client client = clientService.getClientById(primaryClientId);
+            if (client == null) {
+                throw new IllegalStateException("Data klien dengan ID " + primaryClientId + " tidak ditemukan.");
+            }
+
+            if (client.getSaldoRdn() < totalBiaya) {
+                auditLogService.logAction(userId, "BANK_SYNC_INSUFFICIENT_FUNDS", ipAddress,
+                        "Gagal sync SettlementEvent ID " + eventId + " (client: " + primaryClientId + "): Saldo RDN (Rp " +
+                        client.getSaldoRdn() + ") tidak mencukupi untuk biaya settlement (Rp " + totalBiaya + ").");
+
+                throw new InsufficientFundsException("Saldo RDN saat ini (Rp " +
+                        String.format("%,.0f", client.getSaldoRdn()).replace(',', '.') +
+                        ") tidak mencukupi untuk transaksi settlement (Dibutuhkan: Rp " +
+                        String.format("%,.0f", totalBiaya).replace(',', '.') + ").");
+            }
+
+            // 1. Potong saldo RDN client
+            String deductRdnSql = "UPDATE clients SET saldo_rdn = saldo_rdn - ? WHERE id = ?";
+            jdbcTemplate.update(deductRdnSql, totalBiaya, primaryClientId);
+
+            // 2. Insert/Update portfolio asset
             List<PortfolioAsset> assets = portfolioService.getAssetsByClientId(primaryClientId);
             PortfolioAsset existingAsset = assets.stream()
                     .filter(a -> kodeInstrumen.equalsIgnoreCase(a.getNamaInstrumen()))
@@ -226,7 +264,8 @@ public class BankSyncReconciliationService {
             }
 
             recalculateAssetAllocations(primaryClientId);
-            syncLogDetail = "Settlement processed: " + jumlahUnit + " unit " + kodeInstrumen + " untuk client " + primaryClientId;
+            syncLogDetail = "Settlement processed: " + jumlahUnit + " unit " + kodeInstrumen +
+                    " untuk client " + primaryClientId + " (saldo RDN dipotong Rp " + totalBiaya + ")";
         }
 
         String updateEventSql = "UPDATE bank_sync_events SET reconciliation_status = 'SYNCED', synced_at = CURRENT_TIMESTAMP, synced_by = ? WHERE id = ?";

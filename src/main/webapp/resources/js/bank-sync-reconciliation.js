@@ -257,7 +257,24 @@ function renderPositiveMatch(data) {
         html += '<p class="recon-note">Rekening Tujuan [' + escapeHtml(data.unmatchedRekeningSecondary) + ']: Di luar sistem SIMIPKIT (tidak terpengaruh)</p>';
     }
 
-    if (data.previewMessage) {
+    if (data.totalBiayaSettlement) {
+        html += '<div class="recon-impact-box">';
+        html += '<strong>Dampak Sinkronisasi Settlement:</strong>';
+        html += '<ul style="margin-top: 6px; margin-left: 18px; line-height: 1.6;">';
+        html += '<li>Akan menambahkan/meng-update <strong>' + formatNumber(data.jumlahUnit) + ' unit ' + escapeHtml(data.kodeInstrumen) + '</strong> ke portofolio</li>';
+        html += '<li>Akan mengurangi saldo RDN sebesar: <strong>Rp ' + formatNumber(data.totalBiayaSettlement) + '</strong> (' + formatNumber(data.jumlahUnit) + ' unit × Rp ' + formatNumber(data.hargaSettlement) + ')</li>';
+        if (typeof data.saldoRdnSaatIni !== 'undefined') {
+            html += '<li>Saldo RDN saat ini: <strong>Rp ' + formatNumber(data.saldoRdnSaatIni) + '</strong></li>';
+        }
+        html += '</ul>';
+
+        if (data.isSaldoCukup === false) {
+            html += '<div class="recon-warning-box mt-10">';
+            html += '<strong>⚠️ Peringatan Saldo RDN Tidak Mencukupi:</strong> Saldo RDN saat ini (Rp ' + formatNumber(data.saldoRdnSaatIni) + ') lebih kecil dari total biaya settlement (Rp ' + formatNumber(data.totalBiayaSettlement) + '). Eksekusi sync akan ditolak oleh sistem.';
+            html += '</div>';
+        }
+        html += '</div>';
+    } else if (data.previewMessage) {
         html += '<div class="recon-impact-box"><strong>Dampak Sinkronisasi:</strong> ' + escapeHtml(data.previewMessage) + '</div>';
     }
 
@@ -307,6 +324,10 @@ function executeSync(eventId) {
         syncBtn.textContent = 'Proses Sync...';
     }
 
+    // Clear previous inline error box if any
+    var oldErrBox = document.getElementById('recon-sync-error-box');
+    if (oldErrBox) oldErrBox.remove();
+
     var url = contextPath + '/bank-sync-log/' + eventId + '/sync';
     fetch(url, {
         method: 'POST',
@@ -330,7 +351,15 @@ function executeSync(eventId) {
             syncBtn.disabled = false;
             syncBtn.textContent = 'Sync ke Database';
         }
-        alert('Gagal melakukan sync: ' + err.message);
+
+        var contentEl = document.getElementById('recon-positive-content');
+        if (contentEl) {
+            var errDiv = document.createElement('div');
+            errDiv.id = 'recon-sync-error-box';
+            errDiv.className = 'recon-error-box mt-10';
+            errDiv.innerHTML = '<strong>Gagal Sinkronisasi:</strong> ' + escapeHtml(err.message);
+            contentEl.appendChild(errDiv);
+        }
     });
 }
 

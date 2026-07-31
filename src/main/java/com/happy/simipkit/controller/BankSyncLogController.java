@@ -1,5 +1,6 @@
 package com.happy.simipkit.controller;
 
+import com.happy.simipkit.exception.InsufficientFundsException;
 import com.happy.simipkit.service.AuditLogService;
 import com.happy.simipkit.service.BankSyncReconciliationService;
 import org.springframework.http.HttpStatus;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +110,11 @@ public class BankSyncLogController {
         try {
             Map<String, Object> res = reconciliationService.syncEvent(id, userId, request.getRemoteAddr());
             return ResponseEntity.ok(res);
+        } catch (InsufficientFundsException e) {
+            Map<String, Object> err = new HashMap<>();
+            err.put("error", e.getMessage());
+            err.put("code", "INSUFFICIENT_FUNDS");
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(err);
         } catch (IllegalStateException e) {
             Map<String, Object> err = new HashMap<>();
             err.put("error", e.getMessage());

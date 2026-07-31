@@ -34,6 +34,9 @@
     --terminal-border:     #333333;
     --terminal-accent:     #f5d90a;
     --khaki-dark:          #8a7a5a;
+    --danger-bg:           #fdf2f2;
+    --danger-border:       #e0b4b4;
+    --warning-bg:          #fcf8ee;
 }
 
 * {
@@ -832,7 +835,7 @@ textarea.form-control {
         opacity: 0;
         transform: translateY(20px);
     }
-
+}
 
 /* JSON Expand/Collapse Table Styling & Badges */
 #tbl-bank-sync-log {
@@ -1210,6 +1213,26 @@ td.col-payload-raw {
     color: var(--text-muted);
     font-style: italic;
     margin-top: 6px;
+}
+
+.recon-warning-box {
+    background-color: var(--warning-bg);
+    border: 1px solid var(--khaki-dark);
+    border-left: 4px solid var(--khaki-dark);
+    color: var(--status-amber);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
+}
+
+.recon-error-box {
+    background-color: var(--danger-bg);
+    border: 1px solid var(--danger-border);
+    border-left: 4px solid var(--status-red);
+    color: var(--status-red);
+    padding: 10px 14px;
+    font-size: 12.5px;
+    line-height: 1.5;
 }
 
 
