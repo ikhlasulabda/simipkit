@@ -60,7 +60,7 @@
                 <div class="form-group">
                     <label for="zipFile">File Arsip (.ZIP)</label>
                     <input type="file" id="zipFile" name="zipFile" class="form-control" accept=".zip" required>
-                    <p style="font-size: 12px; color: #64748b; margin-top: 4px;">Pilih file zip yang berisi kumpulan dokumen fisik pendukung.</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Pilih file zip yang berisi kumpulan dokumen fisik pendukung.</p>
                 </div>
 
                 <div class="form-group mt-20">

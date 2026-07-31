@@ -68,7 +68,7 @@
         <div class="card">
             <div class="card-title">Preview Ringkasan Portofolio (${periode})</div>
 
-            <div style="background-color: #f1f5f9; padding: 14px; margin-bottom: 16px;">
+            <div style="background-color: var(--table-row-even); padding: 14px; margin-bottom: 16px;">
                 <strong>Total Nilai Portofolio:</strong> <fmt:formatNumber value="${totalValue}" type="currency" currencySymbol="Rp " maxFractionDigits="0"/>
             </div>
 
