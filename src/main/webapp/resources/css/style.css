@@ -55,8 +55,7 @@ body {
 
 /* Layout Header & Navbar */
 header {
-    background: linear-gradient(rgba(18, 30, 20, 0.50), rgba(18, 30, 20, 0.70)), url('../images/header-bg.png') no-repeat center center / cover;
-    background-color: var(--bg-header);
+    background: url('../images/header-bg.png') no-repeat center center / cover;
     color: #ffffff;
     padding: 0 20px;
     height: 70px;
