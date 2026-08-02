@@ -169,9 +169,6 @@ simipkit/
 │   │   ├── ReportTemplateController.java
 │   │   └── UserManagementController.java
 │   │
-│   ├── deserializer/
-│   │   └── GatewayExtensionDeserializer.java
-│   │
 │   ├── exception/
 │   │   └── InsufficientFundsException.java
 │   │

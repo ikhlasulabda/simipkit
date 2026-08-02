@@ -1,8 +1,6 @@
 package com.happy.simipkit.model.banksync;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.happy.simipkit.deserializer.GatewayExtensionDeserializer;
 
 import java.time.LocalDateTime;
 
@@ -13,10 +11,6 @@ import java.time.LocalDateTime;
  * (saldo update, konfirmasi transfer, settlement, dll), sehingga tim
  * dev menggunakan polymorphic typing Jackson agar satu endpoint bisa
  * menerima berbagai bentuk event tanpa perlu endpoint terpisah per bank.
- *
- * Beberapa bank partner (terutama partner lama yang integrasinya custom)
- * mengirim field tambahan di luar skema standar. Field gatewayExtensionData
- * menampung data mentah tersebut agar tidak perlu skema terpisah per partner.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class BankTransactionEvent {
@@ -24,9 +18,6 @@ public abstract class BankTransactionEvent {
     private String bankPartnerCode;
     private String referenceNumber;
     private LocalDateTime receivedAt;
-
-    @JsonDeserialize(using = GatewayExtensionDeserializer.class)
-    private Object gatewayExtensionData;
 
     public BankTransactionEvent() {
     }
@@ -59,13 +50,5 @@ public abstract class BankTransactionEvent {
 
     public void setReceivedAt(LocalDateTime receivedAt) {
         this.receivedAt = receivedAt;
-    }
-
-    public Object getGatewayExtensionData() {
-        return gatewayExtensionData;
-    }
-
-    public void setGatewayExtensionData(Object gatewayExtensionData) {
-        this.gatewayExtensionData = gatewayExtensionData;
     }
 }

