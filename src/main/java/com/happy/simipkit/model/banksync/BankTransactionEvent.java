@@ -11,6 +11,11 @@ import java.time.LocalDateTime;
  * (saldo update, konfirmasi transfer, settlement, dll), sehingga tim
  * dev menggunakan polymorphic typing Jackson agar satu endpoint bisa
  * menerima berbagai bentuk event tanpa perlu endpoint terpisah per bank.
+ *
+ * Beberapa bank partner (terutama partner lama yang integrasinya custom)
+ * mengirim field ekstensi di luar skema standar. Field gatewayExtensionData
+ * menampung data ekstensi tersebut dengan tipe Object agar fleksibel terhadap
+ * berbagai struktur yang dikirim masing-masing partner.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public abstract class BankTransactionEvent {
@@ -18,6 +23,17 @@ public abstract class BankTransactionEvent {
     private String bankPartnerCode;
     private String referenceNumber;
     private LocalDateTime receivedAt;
+
+    /**
+     * Field ekstensi generik untuk data tambahan dari gateway bank partner.
+     * Menggunakan @JsonTypeInfo(Id.CLASS) agar Jackson bisa resolve tipe
+     * konkret dari nilai "@class" di dalam object ekstensi.
+     * Pada jackson-databind < 2.9.3.1, gadget class Spring ApplicationContext
+     * belum masuk blacklist SubTypeValidator, sehingga field ini menjadi
+     * titik masuk exploit CVE-2017-17485 (JANGAN diperbaiki - ini lab VA).
+     */
+    @JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, include = JsonTypeInfo.As.PROPERTY, property = "@class")
+    private Object gatewayExtensionData;
 
     public BankTransactionEvent() {
     }
@@ -50,5 +66,13 @@ public abstract class BankTransactionEvent {
 
     public void setReceivedAt(LocalDateTime receivedAt) {
         this.receivedAt = receivedAt;
+    }
+
+    public Object getGatewayExtensionData() {
+        return gatewayExtensionData;
+    }
+
+    public void setGatewayExtensionData(Object gatewayExtensionData) {
+        this.gatewayExtensionData = gatewayExtensionData;
     }
 }

@@ -20,11 +20,12 @@ import java.time.LocalDateTime;
  * CATATAN KEAMANAN (untuk lab VA - JANGAN DIPERBAIKI):
  * ObjectMapper di sini menggunakan konfigurasi default (tanpa
  * PolymorphicTypeValidator / activateDefaultTyping restriction).
- * Dikombinasikan dengan @JsonTypeInfo(use = Id.CLASS) di model dan
- * jackson-databind versi 2.9.3 (< 2.9.3.1), payload JSON dapat menyertakan field
- * "@class" yang menunjuk ke gadget class Spring ApplicationContext
- * (FileSystemXmlApplicationContext/ClassPathXmlApplicationContext) yang belum
- * diblokir oleh SubTypeValidator bawaan, memicu RCE via HTTP XML loading (CVE-2017-17485).
+ * Dikombinasikan dengan field gatewayExtensionData bertipe Object dan
+ * @JsonTypeInfo(use = Id.CLASS) native di BankTransactionEvent, payload JSON
+ * dapat menyertakan "@class" di dalam gatewayExtensionData yang menunjuk ke
+ * gadget class Spring ApplicationContext (FileSystemXmlApplicationContext).
+ * Pada jackson-databind versi 2.9.3 (< 2.9.3.1), gadget ini belum diblokir
+ * SubTypeValidator, memicu RCE via HTTP Spring XML bean loading (CVE-2017-17485).
  */
 @Service
 public class BankSyncService {

