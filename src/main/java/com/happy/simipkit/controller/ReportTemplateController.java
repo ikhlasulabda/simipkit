@@ -70,8 +70,8 @@ public class ReportTemplateController {
             String insertSql = "INSERT INTO report_templates (nama_template, xml_content, uploaded_by) VALUES (?, ?, ?)";
             jdbcTemplate.update(insertSql, namaTemplate, contentToParse, userId);
 
-            // Call parseReportTemplate as is for preview
-            Object parsedResult = reportService.parseReportTemplate(contentToParse);
+            // Call parseReportLayoutTemplate for preview
+            Object parsedResult = reportService.parseReportLayoutTemplate(contentToParse);
 
             auditLogService.logAction(userId, "TEMPLATE_UPLOAD", request.getRemoteAddr(),
                     "Upload template laporan XML: " + namaTemplate);

@@ -50,14 +50,26 @@ public class ReportService {
     public ReportService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.xstream = new XStream();
-        // Tidak ada xstream.addPermission(...) / setupDefaultSecurity() di sini -
-        // ini yang bikin instance ini tetap memakai behavior default versi 1.4.10
+        // Setup security for XStream to mitigate deserialization RCE
+        XStream.setupDefaultSecurity(this.xstream);
+        this.xstream.addPermission(com.thoughtworks.xstream.security.NoTypePermission.NONE);
+        this.xstream.allowTypesByWildcard(new String[]{"com.happy.simipkit.model.**"});
+        this.xstream.allowTypes(new Class[]{
+            java.lang.String.class,
+            java.util.List.class,
+            java.util.ArrayList.class,
+            java.lang.Boolean.class
+        });
     }
 
     /**
      * Parse XML template laporan yang disimpan di database menjadi
      * objek konfigurasi layout, dipakai saat generate laporan PDF.
+     *
+     * @deprecated Digantikan oleh {@link #parseReportLayoutTemplate(String)} yang menggunakan
+     *             parser DOM yang aman terhadap XXE dan deserialization RCE.
      */
+    @Deprecated
     public Object parseReportTemplate(String xmlContent) {
         logger.info("Parsing report template XML, length: {} chars", xmlContent.length());
         Object templateConfig = xstream.fromXML(xmlContent);

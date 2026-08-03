@@ -79,4 +79,16 @@ public class ReportLayoutConfig {
             this.footerNote = footerNote;
         }
     }
+
+    @Override
+    public String toString() {
+        return "ReportLayoutConfig{" +
+                "title='" + title + '\'' +
+                ", subtitle='" + subtitle + '\'' +
+                ", showClientInfo=" + showClientInfo +
+                ", showGeneratedDate=" + showGeneratedDate +
+                ", columns=" + columns +
+                ", footerNote='" + footerNote + '\'' +
+                '}';
+    }
 }

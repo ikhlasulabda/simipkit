@@ -22,7 +22,7 @@
 
         <!-- Intentionally pinned VULNERABLE versions for VA/pentest lab -->
         <log4j.version>2.14.1</log4j.version>
-        <xstream.version>1.4.10</xstream.version>
+        <xstream.version>1.4.20</xstream.version>
         <jackson.version>2.9.8</jackson.version>
         <zip4j.version>2.11.6</zip4j.version>
         <mysql.version>8.0.25</mysql.version>
