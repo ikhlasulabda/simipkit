@@ -17,5 +17,7 @@ WORKDIR /usr/local/tomcat
 RUN rm -rf webapps/ROOT webapps/ROOT.war
 COPY --from=build /app/target/simipkit.war webapps/ROOT.war
 
+ENV CATALINA_OPTS="-Dlog4j2.formatMsgNoLookups=true"
+
 EXPOSE 8080
 CMD ["catalina.sh", "run"]

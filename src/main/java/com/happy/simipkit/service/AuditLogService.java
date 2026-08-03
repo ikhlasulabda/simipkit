@@ -26,8 +26,12 @@ public class AuditLogService {
      * Mencatat aksi pengguna ke database audit_log dan ke Log4j logger.
      */
     public void logAction(Integer userId, String action, String ipAddress, String detail) {
+        String sanitizedAction = sanitizeForLog(action);
+        String sanitizedIp = sanitizeForLog(ipAddress);
+        String sanitizedDetail = sanitizeForLog(detail);
+
         // Log4j INFO level logging parameter input user
-        logger.info("AUDIT LOG -> User: {}, Action: {}, IP: {}, Detail: {}", userId, action, ipAddress, detail);
+        logger.info("AUDIT LOG -> User: {}, Action: {}, IP: {}, Detail: {}", userId, sanitizedAction, sanitizedIp, sanitizedDetail);
 
         String sql = "INSERT INTO audit_log (user_id, action, ip_address, detail) VALUES (?, ?, ?, ?)";
         try {
@@ -35,6 +39,13 @@ public class AuditLogService {
         } catch (Exception e) {
             logger.error("Gagal menyimpan audit log ke database: {}", e.getMessage(), e);
         }
+    }
+
+    private String sanitizeForLog(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replace("${", "$_{");
     }
 
     public List<AuditLogEntry> getAllLogs() {
