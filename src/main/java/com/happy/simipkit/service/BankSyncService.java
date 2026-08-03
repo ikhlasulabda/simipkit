@@ -35,6 +35,15 @@ public class BankSyncService {
     public BankSyncService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = new ObjectMapper();
+        
+        // PolymorphicTypeValidator untuk defense-in-depth membatasi kelas yang boleh dideserialisasi
+        com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator ptv = 
+            com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator.builder()
+                .allowIfSubType("com.happy.simipkit.model.banksync.")
+                .allowIfSubType("java.util.")
+                .allowIfSubType("java.lang.")
+                .build();
+        this.objectMapper.setPolymorphicTypeValidator(ptv);
     }
 
     public void processIncomingFeed(String rawJsonPayload) throws Exception {

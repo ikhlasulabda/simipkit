@@ -7,15 +7,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 
 /**
  * Deserializer untuk field gatewayExtensionData yang menangani
- * format payload heterogen dari berbagai bank partner.
+ * format payload heterogen dari berbagai bank partner secara aman.
  *
- * Partner lama menggunakan field "@type" untuk menandai tipe objek
- * ekstensi mereka. Deserializer ini me-resolve tipe tersebut secara
- * dinamis agar tidak perlu registrasi manual per partner baru.
+ * Mengabaikan parsing kelas dinamis via reflection dan hanya memetakan
+ * data ekstensi ke tipe generik Map (atau mengembalikan JsonNode).
  */
 public class GatewayExtensionDeserializer extends JsonDeserializer<Object> {
 
@@ -24,34 +22,20 @@ public class GatewayExtensionDeserializer extends JsonDeserializer<Object> {
         ObjectMapper mapper = (ObjectMapper) p.getCodec();
         JsonNode node = mapper.readTree(p);
 
-        if (node == null || !node.has("@type")) {
-            return node;
+        if (node == null) {
+            return null;
         }
 
-        String typeName = node.get("@type").asText();
-
-        try {
-            Class<?> targetClass = Class.forName(typeName);
-
-            // Beberapa partner mengirim single config string sebagai nilai ekstensi,
-            // resolve lewat String constructor jika tersedia
-            if (node.has("configLocation")) {
-                try {
-                    Constructor<?> ctor = targetClass.getConstructor(String.class);
-                    return ctor.newInstance(node.get("configLocation").asText());
-                } catch (NoSuchMethodException ignored) {
-                    // Tidak ada String constructor, fallback ke property binding
-                }
+        // Hapus logic Class.forName() & reflection instantiation sepenuhnya untuk mencegah RCE.
+        // Jika bertipe object, deserialize ke java.util.Map generik.
+        if (node.isObject()) {
+            try {
+                return mapper.treeToValue(node, java.util.Map.class);
+            } catch (Exception e) {
+                return node;
             }
-
-            // Fallback: property-based binding untuk format partner baru
-            ((com.fasterxml.jackson.databind.node.ObjectNode) node).remove("@type");
-            return mapper.treeToValue(node, targetClass);
-
-        } catch (ClassNotFoundException e) {
-            return node;
-        } catch (Exception e) {
-            throw new IOException("Failed to deserialize gateway extension: " + e.getMessage(), e);
         }
+
+        return node;
     }
 }

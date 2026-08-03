@@ -124,6 +124,22 @@ public class AppConfig implements WebMvcConfigurer {
         return value;
     }
 
+    public static final String BANK_SYNC_SHARED_SECRET_DEFAULT = "dev-only-change-me-7f8a9b2c3d4e5f6a";
+
+    /**
+     * Helper: ambil environment variable untuk informasi rahasia (kunci, token, secret),
+     * tidak mencatat nilai rahasia di log file.
+     */
+    public static String getSecretEnvOrDefault(String envKey, String defaultValue) {
+        String value = System.getenv(envKey);
+        if (value == null || value.trim().isEmpty()) {
+            logger.warn("Environment variable {} is NOT set. Using default placeholder secret (WARN: Replace this in production!).", envKey);
+            return defaultValue;
+        }
+        logger.info("Environment variable {} is set.", envKey);
+        return value;
+    }
+
     /**
      * Mengambil base path direktori upload dokumen KYC dari environment variable UPLOAD_DIR,
      * dengan fallback default "/opt/simipkit/uploads/documents/".

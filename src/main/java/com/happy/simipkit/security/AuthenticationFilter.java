@@ -33,7 +33,13 @@ public class AuthenticationFilter implements Filter {
         String uri = httpRequest.getRequestURI();
         String path = uri.substring(contextPath.length());
 
-        // CORS headers khusus untuk endpoint integrasi partner (bisa diakses dari device/domain lain)
+        /**
+         * CORS header dengan wildcard origin (*) diizinkan di sini karena endpoint ini didesain 
+         * untuk integrasi server-to-server pihak ketiga (bank partner). Keamanan dan integritas 
+         * data dijamin melalui validasi tanda tangan digital (signature-based authentication 
+         * menggunakan HMAC-SHA256 dengan shared secret) di tingkat controller, bukan mengandalkan 
+         * kebijakan origin browser.
+         */
         if (path.startsWith("/api/sync/")) {
             httpResponse.setHeader("Access-Control-Allow-Origin", "*");
             httpResponse.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
