@@ -43,7 +43,7 @@ public class AuthenticationFilter implements Filter {
         if (path.startsWith("/api/sync/")) {
             httpResponse.setHeader("Access-Control-Allow-Origin", "*");
             httpResponse.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type");
+            httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Signature");
 
             // Browser kirim OPTIONS dulu (preflight) sebelum POST asli, harus dijawab 200 langsung
             if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
