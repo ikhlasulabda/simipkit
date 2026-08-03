@@ -1,7 +1,8 @@
 package com.happy.simipkit.service;
 
 import com.happy.simipkit.config.AppConfig;
-import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.model.FileHeader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -34,12 +35,14 @@ public class DocumentBulkService {
     private static final Logger logger = LogManager.getLogger(DocumentBulkService.class);
 
     private final JdbcTemplate jdbcTemplate;
+    private final AuditLogService auditLogService;
 
-    public DocumentBulkService(JdbcTemplate jdbcTemplate) {
+    public DocumentBulkService(JdbcTemplate jdbcTemplate, AuditLogService auditLogService) {
         this.jdbcTemplate = jdbcTemplate;
+        this.auditLogService = auditLogService;
     }
 
-    public int extractBulkUpload(MultipartFile zipFile, String clientId) throws IOException {
+    public int extractBulkUpload(MultipartFile zipFile, String clientId, Integer userId, String ipAddress) throws IOException {
         String uploadBaseDir = AppConfig.getUploadDir();
         String tempZipPath = uploadBaseDir + "temp_" + System.currentTimeMillis() + ".zip";
         File tempZip = new File(tempZipPath);
@@ -61,20 +64,48 @@ public class DocumentBulkService {
                 existingFilePaths.add(f.getAbsolutePath());
             }
 
-            // 2. EXTRACTALL (Sama persis, tidak ada sanitasi/perubahan)
+            // 2. PATH TRAVERSAL VALIDATION: Iterasi getFileHeaders() sebelum extractAll()
             ZipFile zip = new ZipFile(tempZip);
+            String targetDirCanonical = targetDir.getCanonicalPath();
+            String targetDirCanonicalWithSeparator = targetDirCanonical.endsWith(File.separator) ? targetDirCanonical : targetDirCanonical + File.separator;
+
+            List<FileHeader> fileHeaders = zip.getFileHeaders();
+            for (FileHeader header : fileHeaders) {
+                if (header.isDirectory()) {
+                    continue;
+                }
+                String entryName = header.getFileName();
+                File resolvedFile = new File(targetDir, entryName);
+                String resolvedCanonical = resolvedFile.getCanonicalPath();
+                if (!resolvedCanonical.startsWith(targetDirCanonicalWithSeparator)) {
+                    // Path traversal detected!
+                    tempZip.delete();
+                    String baseName = new File(entryName).getName();
+                    auditLogService.logAction(userId, "BULK_UPLOAD_PATH_TRAVERSAL_BLOCKED", ipAddress,
+                            "Path traversal detected in ZIP entry: " + baseName);
+                    throw new IOException("Path traversal detected in ZIP entry: " + baseName);
+                }
+            }
+
+            // 3. EXTRACTALL (Aman karena sudah divalidasi)
             logger.info("Extracting bulk document upload for client {} to {}", clientId, extractionTarget);
             zip.extractAll(extractionTarget);
             logger.info("Bulk document extraction completed for client {}", clientId);
 
-            // 3. AFTER-SCAN: Scan ulang folder extractionTarget
+            // 4. AFTER-SCAN: Scan ulang folder extractionTarget
             List<File> allFilesAfter = new ArrayList<>();
             scanFiles(targetDir, allFilesAfter);
 
-            // 4. DELTA: Filter hanya file yang BENAR-BENAR BARU muncul dari ZIP ini
+            // 5. DELTA: Filter hanya file yang BENAR-BENAR BARU muncul dari ZIP ini dengan validasi path traversal
             List<File> newFiles = new ArrayList<>();
             for (File f : allFilesAfter) {
                 if (!existingFilePaths.contains(f.getAbsolutePath())) {
+                    String fCanonical = f.getCanonicalPath();
+                    if (!fCanonical.startsWith(targetDirCanonicalWithSeparator)) {
+                        logger.error("Anomaly detected: file outside target directory: {}", f.getName());
+                        f.delete();
+                        continue;
+                    }
                     newFiles.add(f);
                 }
             }
